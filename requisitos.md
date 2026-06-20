@@ -1,45 +1,49 @@
 # Largada BR - Requisitos
 
 # Inputs
-- botão ORÇA fechada (1/2/reset)
+- botão Z_MORTA fechada (1/2/reset)
 - botão BOIA largada (1/2/reset)
 - botão CONTAGEM para largada (5min/1min/fim)
-- botão COMPARAR desempenho (1/2)
+- botão COMPARA desempenho (1/2)
 - velocidade do GPS
 - lat/long do GPS
 
 # Outputs
+- visual na tela
 - audio (autofalante bluetooth)
 - log em arquivo texto
   
-Nota: o termo "avisar" = emitir áudio + logar em arquivo
+Nota: o termo "avisar" = emitir áudio + exibir no campo status + logar em arquivo
 
 # Medições do GPS
 
 A cada 5s o RBR deve calcular a posição do veleiro (x0, y0) como as coordenadas de long e lat do GPS.
 
-A cada 5s o RBR deve calcular o rumo a partir das coordenadas, considerando 10s de deslocamento:  
-a = arctan (delta_long / delta_lat)  
-se delta_long positivo e delta_lat positivo -> rumo = a  
-se delta_long positivo e delta_lat negativo -> rumo = 360 - a  
-se delta_long negativo e delta_lat positivo -> rumo = 180 - a  
-se delta_long negativo e delta_lat negativo -> rumo = a -180  
+A cada 5s o RBR deve calcular o rumo do veleiro a partir das coordenadas, considerando 10s de deslocamento:  
+    a = arctan (delta_long / delta_lat)  
+    se delta_long positivo e delta_lat positivo -> rumo = a  
+    se delta_long positivo e delta_lat negativo -> rumo = 360 - a  
+    se delta_long negativo e delta_lat positivo -> rumo = 180 - a  
+    se delta_long negativo e delta_lat negativo -> rumo = a -180  
 
-A cada 5s o RBR deve indicar se houve perda ou ganho de velocidade com relação a TBD
+A cada 5s o RBR deve calcular o SOG a partir das coordenadas, considerando 10s de deslocamento:  
+    sog = k * sqrt(delta_long² + delta_lat²)  
+
+A cada 5s o RBR deve calcular o VMG como SOG * cos(rumo).  
 
 # Calculo da direção do vento estimado
 
-INFO: Como o sistema não possui sensor de direção do vento, este é estimado pela bissetriz dos ângulos que o veleiro faz em orça fechada com vela à direita e com vela à esquerda.
+INFO: Como o sistema não possui sensor de direção do vento, este é estimado pela bissetriz dos ângulos que o veleiro faz em Z_MORTA fechada com vela à direita e com vela à esquerda.
 
-Se o botão ORÇA for pressionado e o rumo não for constante pelas últimas 2 medidas, RBR deve avisar "Manter rumo e tentar novamente".
+Se o botão Z_MORTA for pressionado e o rumo não for constante pelas últimas 2 medidas, RBR deve avisar "Manter rumo e tentar novamente".
 
-Se o botão ORÇA for pressionado pela primeira vez e o rumo for constante pelas últimas 2 medidas, RBR deve armazenar o ângulo como o1 e avisar "Orça 1 definida como XXX" (XXX em ponto cardinal no audio e graus no log)
+Se o botão Z_MORTA for pressionado pela primeira vez e o rumo for constante pelas últimas 2 medidas, RBR deve armazenar o ângulo como o1 e avisar "Z_MORTA 1 definida como XXX" (XXX em ponto cardinal no audio e graus no log)
 
-Se o botão ORÇA for pressionado após o1 definido e o rumo for constante pelas últimas 2 medidas, RBR deve armazenar o ângulo como o2 e avisar "Orça 2 definida como XXX" (XXX em ponto cardinal no audio e graus no log)
+Se o botão Z_MORTA for pressionado após o1 definido e o rumo for constante pelas últimas 2 medidas, RBR deve armazenar o ângulo como o2 e avisar "Z_MORTA 2 definida como XXX" (XXX em ponto cardinal no audio e graus no log)
 
 Quando o1 e o2 estiverem definidos, RBR deve calcular angulo_vento como a bissetriz entre o1 e o1 e avisar "Vento calculado como XXX" (XXX em ponto cardinal no audio e graus no log)
 
-Se o botão ORÇA for pressionado e o1 e o2 já estiverem definidos, RBR deve resetar o1, o2 e angulo_vento e avisar "Reset do vento estimado".
+Se o botão Z_MORTA for pressionado e o1 e o2 já estiverem definidos, RBR deve resetar o1, o2 e angulo_vento e avisar "Reset do vento estimado".
 
 Se o rumo for constante por 4 medidas dentro da zona morta com velocidade >2kt, RBR deve deslocar a zona morta (o1 e o2) e o angulo_vento pela quantidade de graus que o rumo estiver adentro, e alertar "Vento calculado como XXX" (XXX em ponto cardinal no audio e graus no log)
 
@@ -63,6 +67,8 @@ Se o angulo_montagem for maior que angulo_vento + 5 deg, RBR deve avisar "Vantag
 Se o angulo_montagem for menor que angulo_vento - 5 deg, RBR deve avisar "Vantagem pela boia 1".
 
 Se o angulo_montagem estiver entre angulo_vento +/- 5 deg, RBR deve avisar "Boias equivalentes".
+
+Se x1, y1, x2 e y2 estiverem definidos, RBR deve calcular o angulo_alvo como o ângulo perpendicular ao angulo_montagem.
 
 # Contagem regressiva para largada
 
@@ -89,7 +95,15 @@ Se a contagem regressiva estiver entre 1:30 e 0:10 e a velocidade (GPS) for maio
 
 # Comparação de desempenho
 
-TO DO: adicionar> Comparação de desempenho em diferentes ajustes do veleiro
+TO DO: adicionar> Comparação de desempenho (SOG e VMG) em diferentes ajustes do veleiro  
+mostrar valores anteriores em menor destaque
+
+
+# Anuncios periódicos
+
+ TO DO: visuais
+
+ TO DO: aurais: ganhos, perdas
 
 # Finalização da regata
 
