@@ -12,4 +12,5 @@ by jdavison
 * Contagem regressiva para largada
 * Aviso de acelerar/reduzir velocidade no minuto final
 * Comparação de desempenho em diferentes ajustes do veleiro
+* VMG ?
 * Registro da trajetória em CSV (tempo, coord, rumo, vel)
