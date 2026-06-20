@@ -18,8 +18,12 @@ Nota: o termo "avisar" = emitir áudio + logar em arquivo
 
 A cada 5s o RBR deve calcular a posição do veleiro (x0, y0) como as coordenadas de long e lat do GPS.
 
-A cada 5s o RBR deve calcular o rumo a partir das coordenadas, considerando 10s de deslocamento: 
-rumo = arctan (k*delta_long / delta_lat), onde k=cos(23deg)=0.92
+A cada 5s o RBR deve calcular o rumo a partir das coordenadas, considerando 10s de deslocamento:  
+a = arctan (delta_long / delta_lat)  
+se delta_long positivo e delta_lat positivo -> rumo = a  
+se delta_long positivo e delta_lat negativo -> rumo = 360 - a  
+se delta_long negativo e delta_lat positivo -> rumo = 180 - a  
+se delta_long negativo e delta_lat negativo -> rumo = a -180  
 
 A cada 5s o RBR deve indicar se houve perda ou ganho de velocidade com relação a TBD
 
