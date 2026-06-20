@@ -16,9 +16,10 @@ Nota: o termo "avisar" = emitir áudio + logar em arquivo
 
 # Medições do GPS
 
-A cada 5s o RBR deve guardar a posição do veleiro (x0, y0) como as coordenadas de long e lat do GPS. TO DO: alguma conversão?
+A cada 5s o RBR deve calcular a posição do veleiro (x0, y0) como as coordenadas de long e lat do GPS.
 
-A cada 5s o RBR deve calcular o rumo a partir das coordenadas: fórmula (considerando 10s de deslocamento)
+A cada 5s o RBR deve calcular o rumo a partir das coordenadas, considerando 10s de deslocamento: 
+rumo = arctan (k*delta_long / delta_lat), onde k=cos(23deg)=0.92
 
 A cada 5s o RBR deve indicar se houve perda ou ganho de velocidade com relação a TBD
 
