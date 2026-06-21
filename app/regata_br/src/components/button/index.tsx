@@ -1,6 +1,7 @@
 import { TouchableOpacity, TouchableOpacityProps, Text } from "react-native"
 import { styles } from "./styles"
 
+// Adicionando title com as propriedades do botao (ex. onPress)
 type Props = TouchableOpacityProps & {
     title: string,
 }
