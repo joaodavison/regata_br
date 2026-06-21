@@ -1,5 +1,6 @@
-import { Text, View, StyleSheet, Alert } from 'react-native';
+import { Text, View, StyleSheet, Alert, TextInput } from 'react-native';
 import {Button} from "../components/button"
+import {Input} from "../components/input"
 
 export default function Index() {
 
@@ -11,6 +12,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Regata BR</Text>
+      <TextInput onChangeText={(text) => console.log(text)}></TextInput>
       <Button title="Contagem" onPress={funcContagem} />
       <Button title="Compara" />
     </View>
