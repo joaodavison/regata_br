@@ -1,15 +1,27 @@
-import { useState } from "react"
-import { Text, View, StyleSheet, Alert, TextInput } from 'react-native';
+import { useState, useEffect } from "react"
+import { Text, View, StyleSheet, Alert } from 'react-native';
 import {Button} from "../components/button"
 import {Input} from "../components/input"
 
 export default function Index() {
   
-  // estado atualizavel na rebderizacao
+  // estado atualizavel na renderizacao
   const [name, setName] = useState("teste")
+  const [counter, setCounter] = useState(-300) // 5 min
 
   // var global (nao atualiza na renderizacao)
   // let name = ""
+
+  // chamada temporizada (1s) 
+  useEffect(() => {
+    const intervalo = setInterval(() => {
+      setCounter((counter) => counter + 1);
+    }, 1000);
+
+    // limpa o intervalo quando o componente desmonta ou muda
+    return () => clearInterval(intervalo);
+  }, [counter]);
+
 
   // funcs auxiliares
   function funcContagem(){
@@ -26,6 +38,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Regata BR - var: {name}</Text>
+      <Text style={styles.title}>Contagem: {counter}</Text>
 
       { /* input com onChange + arrow function */}
       <Input onChangeText={(text) => funcText(text)}></Input>
