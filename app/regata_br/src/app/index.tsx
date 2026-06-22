@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react"
 import { Text, View, StyleSheet, Alert } from 'react-native';
-import {Button} from "../components/button"
-import {Input} from "../components/input"
+import { Button} from "../components/button"
+import { Input} from "../components/input"
+import { router } from "expo-router"
+import Page2 from "./page2";
 
 export default function Index() {
   
@@ -34,6 +36,10 @@ export default function Index() {
     setName(text)
   }
 
+  function funcAvanca(){
+    router.navigate("./page2")
+  }
+
   // componentes renderizados no app
   return (
     <View style={styles.container}>
@@ -46,7 +52,7 @@ export default function Index() {
       
       { /* botao com onPress */}
       <Button title="Contagem" onPress={funcContagem} />
-      <Button title="Compara" />
+      <Button title="Compara" onPress={funcAvanca}/>
     </View>
   );
 }
