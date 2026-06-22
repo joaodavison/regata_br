@@ -1,0 +1,9 @@
+ 1311  nvm install --lts
+ 1312  sudo npm cache clean -f
+ 1313  sudo npm install -g n
+ 1314  sudo n lts
+ 1342  npx expo install expo@^54.0.8 --fix
+
+ 1324  npx create-expo-app --template
+
+npx expo install expo-location
