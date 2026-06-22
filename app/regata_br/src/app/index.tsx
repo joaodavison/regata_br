@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, Alert } from 'react-native';
 import { Button} from "../components/button"
 import { Input} from "../components/input"
 import { router } from "expo-router"
-import Page2 from "./page2";
+import Page2 from "./gps";
 
 export default function Index() {
   
@@ -37,7 +37,7 @@ export default function Index() {
   }
 
   function funcAvanca(){
-    router.navigate("./page2")
+    router.navigate("./gps")
   }
 
   // componentes renderizados no app
