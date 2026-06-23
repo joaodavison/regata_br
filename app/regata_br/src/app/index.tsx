@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Text, View, StyleSheet, Alert } from 'react-native';
+import { Text, View, Pressable, StyleSheet, Alert } from 'react-native';
 import { Button} from "../components/button"
 import { Input} from "../components/input"
 import * as Location from 'expo-location';
@@ -15,21 +15,13 @@ export default function Index() {
 
   // chamada temporizada (1s) 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCounter((counter) => counter + 1);
-    }, 1000);
-
-    // limpa o intervalo quando o componente desmonta ou muda
+    const interval = setInterval(() => { setCounter((counter) => counter + 1); }, 1000);
     return () => clearInterval(interval);
   }, [counter]);
 
   // chamada temporizada (5s) 
   useEffect(() => {
-    const interval = setInterval(() => {
-      getLocation();
-    }, 5000);
-
-    // limpa o intervalo quando o componente desmonta ou muda
+    const interval = setInterval(() => { getLocation(); }, 5000);
     return () => clearInterval(interval);
   }, []);  
 
@@ -61,19 +53,19 @@ export default function Index() {
       <Button title="Z. Morta" />
       <Button title="Boia Largada"/>
 
-      <Text style={styles.title}>Regata BR - var: {name}</Text>
-      <Text style={styles.title}>Contagem: {counter}</Text>
+      <Text style={styles.title}>Regata BR</Text>
 
       { /* mostra location se tiver dados */}
-      {
-      location && (<Text style={styles.title}>{calcLat(location.coords.latitude)}, {calcLong(location.coords.longitude)}  @{calcTime(location.timestamp)}</Text>)}
+      {location && (<Text style={styles.title}>{calcLat(location.coords.latitude)}, {calcLong(location.coords.longitude)}  @{calcTime(location.timestamp)}</Text>)}
 
       { /* input com onChange + arrow function */}
-      <Input onChangeText={(text) => setName(text)}></Input>
+      {/*<Input onChangeText={(text) => setName(text)}></Input>*/}
       { /* <Input onChangeText={(text) => setName(text)}></Input> */ }
-      
-      { /* botao com onPress */}
-      <Button title="Contagem" />
+            
+      <Pressable style={styles.pressable} onPress={() => setCounter(-300)}>
+        <Text style={styles.title}>Contagem</Text>
+        <Text>{counter}</Text>
+      </Pressable>
       <Button title="Compara"/>
     </View>
   );
@@ -92,4 +84,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
   },
+  pressable: {
+    width: "40%",
+    height: 52,
+    backgroundColor: "#E15610",
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+},
 })
