@@ -2,9 +2,9 @@ import { useState, useEffect } from "react"
 import { Text, View, StyleSheet, Alert } from 'react-native';
 import { Button} from "../components/button"
 import { Input} from "../components/input"
-import { router } from "expo-router"
 import * as Location from 'expo-location';
-import Page2 from "./gps";
+
+import { calcTime, calcLat, calcLong } from './aux-functions';
 
 export default function Index() {
   
@@ -12,9 +12,6 @@ export default function Index() {
   const [name, setName] = useState("teste")
   const [counter, setCounter] = useState(-300) // 5 min
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
-
-  // var global (nao atualiza na renderizacao)
-  // let name = ""
 
   // chamada temporizada (1s) 
   useEffect(() => {
@@ -58,36 +55,12 @@ export default function Index() {
     // }
   }  
 
-  // funcs auxiliares
-  function funcContagem(){
-    const tempo = 10
-    return Alert.alert(`T = ${tempo}`)
-  }
-
-  function funcText(text: string){
-    console.log(text)
-    setName(text)
-  }
-
-  function funcAvanca(){
-    router.navigate("./gps")
-  }
-
-  function calcTime(timestamp: number){
-    return Math.trunc(timestamp / 1000 - 1782200000)
-  }
-
-  function calcLat(latitude: number){
-    return Math.trunc(-10000 * (23.22 + latitude))
-  } 
-
-  function calcLong(longitude: number){
-    return Math.trunc(-10000 * (45.90 + longitude))
-  }  
-
   // componentes renderizados no app
   return (
     <View style={styles.container}>
+      <Button title="Z. Morta" />
+      <Button title="Boia Largada"/>
+
       <Text style={styles.title}>Regata BR - var: {name}</Text>
       <Text style={styles.title}>Contagem: {counter}</Text>
 
@@ -96,12 +69,12 @@ export default function Index() {
       location && (<Text style={styles.title}>{calcLat(location.coords.latitude)}, {calcLong(location.coords.longitude)}  @{calcTime(location.timestamp)}</Text>)}
 
       { /* input com onChange + arrow function */}
-      <Input onChangeText={(text) => funcText(text)}></Input>
+      <Input onChangeText={(text) => setName(text)}></Input>
       { /* <Input onChangeText={(text) => setName(text)}></Input> */ }
       
       { /* botao com onPress */}
-      <Button title="Contagem" onPress={funcContagem} />
-      <Button title="Compara" onPress={funcAvanca}/>
+      <Button title="Contagem" />
+      <Button title="Compara"/>
     </View>
   );
 }
