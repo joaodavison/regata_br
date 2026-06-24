@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { Text, View, Pressable, StyleSheet, Alert } from 'react-native';
-import { Button} from "../components/button"
-import { Input} from "../components/input"
+// import { Button} from "../components/button"
+// import { Input} from "../components/input"
 import * as Location from 'expo-location';
 
 import { calcTime, calcLat, calcLong } from './aux-functions';
@@ -50,24 +50,40 @@ export default function Index() {
   // componentes renderizados no app
   return (
     <View style={styles.container}>
-      <Button title="Z. Morta" />
-      <Button title="Boia Largada"/>
+
+      { /* botoes superiores */ }
+      <View style={styles.ladoalado}>
+        <Pressable style={styles.pressable}>
+          <Text style={styles.title}>Zona Morta</Text>
+          <Text>.</Text>
+        </Pressable>
+
+        <Pressable style={styles.pressable} >
+          <Text style={styles.title}>Boia Largada</Text>
+          <Text>.</Text>
+        </Pressable>        
+      </View>      
 
       <Text style={styles.title}>Regata BR</Text>
 
       { /* mostra location se tiver dados */}
       {location && (<Text style={styles.title}>{calcLat(location.coords.latitude)}, {calcLong(location.coords.longitude)}  @{calcTime(location.timestamp)}</Text>)}
 
-      { /* input com onChange + arrow function */}
-      {/*<Input onChangeText={(text) => setName(text)}></Input>*/}
-      { /* <Input onChangeText={(text) => setName(text)}></Input> */ }
-            
-      <Pressable style={styles.pressable} onPress={() => setCounter(-300)}>
-        <Text style={styles.title}>Contagem</Text>
-        <Text>{counter}</Text>
-      </Pressable>
-      <Button title="Compara"/>
-    </View>
+      { /* botoes inferiores */ }
+      <View style={styles.ladoalado}>
+        <Pressable style={styles.pressable} onPress={() => setCounter(-300)}>
+          <Text style={styles.title}>Contagem</Text>
+          <Text>{counter}</Text>
+        </Pressable>
+
+        <Pressable style={styles.pressable} >
+          <Text style={styles.title}>Compara</Text>
+          <Text>.</Text>
+        </Pressable>        
+      </View>
+  
+    </View>      
+  
   );
 }
 
@@ -79,15 +95,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 16,
   },
+  ladoalado:{
+    flexDirection: "row",    
+    gap: 16,
+  },
   title:{
     color: "#334462",
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "bold",
   },
   pressable: {
-    width: "40%",
-    height: 52,
-    backgroundColor: "#E15610",
+    width: "45%",
+    height: "45%",
+    backgroundColor: "#eea826ff",
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
