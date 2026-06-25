@@ -1,19 +1,21 @@
 import { useState, useEffect } from "react"
 import { Text, View, Pressable, StyleSheet, Alert } from 'react-native';
-// import { Button} from "../components/button"
-// import { Input} from "../components/input"
+import { Input} from "../components/input"
 import * as Location from 'expo-location';
 
-import { calcTime, calcLat, calcLong } from './aux-functions';
-import { Input } from "../components/input";
+import { calcTime, calcLat, calcLong, calcHeading } from './aux-functions';
 
 export default function Index() {
   
-  // estado atualizavel na renderizacao
-  const [name, setName] = useState("teste")
+  // estados atualizaveis na renderizacao
+  const [message, setMessage] = useState("Boa regata")
   const [counter, setCounter] = useState(-300) // 5 min
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [heading, setHeading] = useState(0.5) 
+
+  // globals
+  let last_latitude = 0;
+  let last_longitude = 0;  
 
   // chamada temporizada (1s) 
   useEffect(() => {
@@ -23,7 +25,15 @@ export default function Index() {
 
   // chamada temporizada (5s) 
   useEffect(() => {
-    const interval = setInterval(() => { getLocation(); }, 5000);
+    const interval = setInterval(() => { 
+      getLocation(); 
+      if(location){
+        console.log(location.coords.latitude, location.coords.longitude, last_latitude, last_longitude)   
+        setHeading(calcHeading(location.coords.latitude, location.coords.longitude, last_latitude, last_longitude));
+        last_latitude  = location.coords.latitude;      
+        last_longitude = location.coords.longitude;         
+      }
+    }, 5000);
     return () => clearInterval(interval);
   }, []);  
 
@@ -49,6 +59,16 @@ export default function Index() {
     // }
   }  
 
+function calcHeading(lat: number, long: number, last_lat: number, last_long: number){
+  let delta_long = long - last_long;
+  let delta_lat = lat - last_lat;
+  let heading = 0;
+  if(delta_lat != 0){
+    heading = Math.atan(delta_long / delta_lat)
+  }
+  return heading;
+};  
+
   // componentes renderizados no app
   return (
     <View style={styles.container}>
@@ -56,12 +76,12 @@ export default function Index() {
       { /* botoes superiores */ }
       <View style={styles.ladoalado}>
         <Pressable style={styles.pressable}>
-          <Text style={styles.title}>Zona Morta</Text>
+          <Text style={styles.title}>Z. Morta</Text>
           <Text>.</Text>
         </Pressable>
 
         <Pressable style={styles.pressable} >
-          <Text style={styles.title}>Boia Largada</Text>
+          <Text style={styles.title}>Boia Larg.</Text>
           <Text>.</Text>
         </Pressable>        
       </View>      
@@ -72,7 +92,7 @@ export default function Index() {
         <View style={styles.card}><Text>Timestamp</Text>{location && (<Text style={styles.title}>{calcTime(location.timestamp)}</Text>)}</View>
       </View>
       <View style={styles.ladoalado}>
-        <View style={styles.card}><Text>Est. Heading</Text>{heading && (<Text style={styles.title}>{heading}</Text>)}</View>
+        <View style={styles.card}><Text>Estimated Hdg</Text>{heading && (<Text style={styles.title}>{heading}</Text>)}</View>
         <View style={styles.card}><Text>GPS Heading</Text>{location && (<Text style={styles.title}>{Math.round(location.coords.heading)}</Text>)}</View>
       </View>      
       
@@ -104,6 +124,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 32,
     justifyContent: "center",
+    gap: 10
   },
   ladoalado:{
     flexDirection: "row",    
@@ -112,14 +133,14 @@ const styles = StyleSheet.create({
   },
   card:{ 
     width: 140,
-    height: 200,
-    backgroundColor: "#ccccccff",
+    height: 140,
+    backgroundColor: "#ecececff",
     justifyContent: "center",
     alignItems: "center",
   },  
   title:{
     color: "#334462",
-    fontSize: 22,
+    fontSize: 28,
     fontWeight: "bold",
   },
   pressable: {
