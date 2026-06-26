@@ -77,7 +77,7 @@ export default function Index() {
       { /* botoes superiores */ }
       <View style={styles.ladoalado}>
         <Pressable style={styles.pressable}>
-          <Text style={styles.medtext}>Z. Morta</Text>
+          <Text style={styles.medtext}>Zona Morta</Text>
           <Text>.</Text>
         </Pressable>
 
@@ -125,7 +125,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 32,
+    padding: 20,
     justifyContent: "center",
     gap: 5
   },
@@ -141,9 +141,9 @@ const styles = StyleSheet.create({
     padding: 5,
   },  
   card:{ 
-    width: 140,
+    width: 160,
     height: 140,
-    backgroundColor: "#ecececff",
+    backgroundColor: "#f3f3f3ff",
     justifyContent: "center",
     alignItems: "center",
     fontSize: 28,
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },   
   pressable: {
-    width: 140,
+    width: 160,
     height: 70,
     backgroundColor: "#ffd27dff",
     borderRadius: 15,
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   message: {
-    width: 300,
+    width: 320,
     fontSize: 20,
   },  
 })
