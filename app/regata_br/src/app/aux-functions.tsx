@@ -14,9 +14,22 @@ export function calcLong(longitude: number){
 export function calcHeading(lat: number, long: number, last_lat: number, last_long: number){
   let delta_long = long - last_long;
   let delta_lat = lat - last_lat;
-  let heading = 33;
+  let heading = null;
+
   if(delta_lat != 0){
-    heading = Math.round(Math.atan(delta_long / delta_lat) * 180 / 3.14159);
+    let heading_aux = Math.abs(Math.round(Math.atan(delta_long / delta_lat) * 180 / 3.14159));
+    if(delta_long >= 0 && delta_lat >= 0){
+      heading = heading_aux;
+    }
+    else if(delta_long >= 0 && delta_lat < 0){
+      heading = 360 - heading_aux;
+    }
+    else if(delta_long < 0 && delta_lat >= 0){
+      heading = 180 - heading_aux;
+    }
+    else{
+      heading = heading_aux + 180;
+    }
   }
   return heading;
 };

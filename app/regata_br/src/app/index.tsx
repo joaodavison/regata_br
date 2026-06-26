@@ -11,7 +11,7 @@ export default function Index() {
   const [message, setMessage] = useState("Boa regata")
   const [counter, setCounter] = useState(-300) // 5 min
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
-  const [heading, setHeading] = useState(0.5) 
+  const [heading, setHeading] = useState(0) 
 
   // globals
   const lastLatitude = useRef<number | null>(null);
@@ -24,47 +24,36 @@ export default function Index() {
     return () => clearInterval(interval);
   }, [counter]);
 
-  // // gps
-  // async function getLocation() {
-
-  //   // solicita a permissão de acesso ao GPS
-  //   let { status } = await Location.requestForegroundPermissionsAsync();
-  //   if (status !== 'granted') {
-  //     return;
-  //   }
-
-  //   // captura as coordenadas
-  //   try {
-  //     let currentLocation = await Location.getCurrentPositionAsync({
-  //       accuracy: Location.Accuracy.High,
-  //     });
-  //     setLocation(currentLocation);
-  //   }
-  //   catch (error) {
-  //   } 
-  //   finally {
-  //   }
-  // }  
 
 
-  // chamada temporizada (5s) 
+
+  // GPS
   useEffect(() => {
+
+     // chamada temporizada (5s) 
     const interval = setInterval(async () => {
-      const currentLocation = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
-      });
 
-      const lat = currentLocation.coords.latitude;
-      const lon = currentLocation.coords.longitude;
-
-      if (lastLatitude.current !== null && lastLongitude.current !== null) {
-        let heading = calcHeading(lat, lon, lastLatitude.current, lastLongitude.current);
-        setHeading( heading );
-        console.log(lat, lon, lastLatitude.current, lastLongitude.current, heading)   
+      // solicita a permissão de acesso ao GPS
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        return;
       }
 
-      lastLatitude.current = lat;
-      lastLongitude.current = lon;
+      // coleta dados do GPS
+      const currentLocation = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.High});
+      setLocation(currentLocation);
+
+      // calcula heading estimado
+      if (lastLatitude.current !== null && lastLongitude.current !== null) {
+        let heading = calcHeading(currentLocation.coords.latitude, currentLocation.coords.longitude, lastLatitude.current, lastLongitude.current);
+        if(heading != null){
+          setHeading(heading);
+        }
+        console.log(currentLocation.coords.latitude, currentLocation.coords.longitude, lastLatitude.current, lastLongitude.current, heading)   
+      }
+
+      lastLatitude.current = currentLocation.coords.latitude;
+      lastLongitude.current = currentLocation.coords.longitude;
     }, 5000);
 
     return () => clearInterval(interval);
