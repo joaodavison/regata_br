@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react"
-import { Text, View, Pressable, StyleSheet, Alert } from 'react-native';
-import { Input} from "../components/input"
 import * as Location from 'expo-location';
+import { useEffect, useRef, useState } from "react";
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Input } from "../components/input";
 
-import { calcTime, calcLat, calcLong, calcHeading } from './aux-functions';
+import { calcHeading, calcLat, calcLong, calcTime } from './aux-functions';
 
 export default function Index() {
   
@@ -14,8 +14,9 @@ export default function Index() {
   const [heading, setHeading] = useState(0.5) 
 
   // globals
-  let last_latitude = 0;
-  let last_longitude = 0;  
+  const lastLatitude = useRef<number | null>(null);
+  const lastLongitude = useRef<number | null>(null);
+
 
   // chamada temporizada (1s) 
   useEffect(() => {
@@ -23,51 +24,53 @@ export default function Index() {
     return () => clearInterval(interval);
   }, [counter]);
 
+  // // gps
+  // async function getLocation() {
+
+  //   // solicita a permissão de acesso ao GPS
+  //   let { status } = await Location.requestForegroundPermissionsAsync();
+  //   if (status !== 'granted') {
+  //     return;
+  //   }
+
+  //   // captura as coordenadas
+  //   try {
+  //     let currentLocation = await Location.getCurrentPositionAsync({
+  //       accuracy: Location.Accuracy.High,
+  //     });
+  //     setLocation(currentLocation);
+  //   }
+  //   catch (error) {
+  //   } 
+  //   finally {
+  //   }
+  // }  
+
+
   // chamada temporizada (5s) 
   useEffect(() => {
-    const interval = setInterval(() => { 
-      getLocation(); 
-      if(location){
-        console.log(location.coords.latitude, location.coords.longitude, last_latitude, last_longitude)   
-        setHeading(calcHeading(location.coords.latitude, location.coords.longitude, last_latitude, last_longitude));
-        last_latitude  = location.coords.latitude;      
-        last_longitude = location.coords.longitude;         
-      }
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);  
-
-  // gps
-  async function getLocation() {
-
-    // solicita a permissão de acesso ao GPS
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      return;
-    }
-
-    // captura as coordenadas
-    try {
-      let currentLocation = await Location.getCurrentPositionAsync({
+    const interval = setInterval(async () => {
+      const currentLocation = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
       });
-      setLocation(currentLocation);
-    }
-    catch (error) {
-    } 
-    // finally {
-    // }
-  }  
 
-function calcHeading(lat: number, long: number, last_lat: number, last_long: number){
-  let delta_long = long - last_long;
-  let delta_lat = lat - last_lat;
-  let heading = 0;
-  if(delta_lat != 0){
-    heading = Math.atan(delta_long / delta_lat)
-  }
-  return heading;
-};  
+      const lat = currentLocation.coords.latitude;
+      const lon = currentLocation.coords.longitude;
+
+      if (lastLatitude.current !== null && lastLongitude.current !== null) {
+        let heading = calcHeading(lat, lon, lastLatitude.current, lastLongitude.current);
+        setHeading( heading );
+        console.log(lat, lon, lastLatitude.current, lastLongitude.current, heading)   
+      }
+
+      lastLatitude.current = lat;
+      lastLongitude.current = lon;
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+
 
   // componentes renderizados no app
   return (

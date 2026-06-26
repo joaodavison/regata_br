@@ -1,5 +1,3 @@
-import Page2 from "./gps";
-import { router } from "expo-router"
 
 export function calcTime(timestamp: number){
   return Math.trunc(timestamp / 1000 - 1782200000)
@@ -13,14 +11,13 @@ export function calcLong(longitude: number){
   return Math.trunc(-10000 * (45.90 + longitude))
 };
 
-export function calcHeading2(lat: number, long: number, last_lat: number, last_long: number){
+export function calcHeading(lat: number, long: number, last_lat: number, last_long: number){
   let delta_long = long - last_long;
   let delta_lat = lat - last_lat;
   let heading = 33;
-  //console.log(heading)
-  // if(delta_lat != 0){
-  //   heading = Math.atan(delta_long / delta_lat)
-  // }
+  if(delta_lat != 0){
+    heading = Math.round(Math.atan(delta_long / delta_lat) * 180 / 3.14159);
+  }
   return heading;
 };
 
