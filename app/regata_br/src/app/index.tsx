@@ -6,28 +6,31 @@ import { Input } from "../components/input";
 import { calcHeading, calcLat, calcLong, calcTime } from './aux-functions';
 
 export default function Index() {
-  
-  // estados atualizaveis na renderizacao
-  const [message, setMessage] = useState("Boa regata")
+
+  // Mensagens
+  const [aviso, setAviso] = useState("Boa regata")  
+
+  // Timer
   const [counter, setCounter] = useState(-300) // 5 min
-  const [location, setLocation] = useState<Location.LocationObject | null>(null);
-  const [heading, setHeading] = useState(0) 
 
-  // globals
-  const lastLatitude = useRef<number | null>(null);
-  const lastLongitude = useRef<number | null>(null);
-
-
-  // chamada temporizada (1s) 
   useEffect(() => {
-    const interval = setInterval(() => { setCounter((counter) => counter + 1); }, 1000);
+    // chamada temporizada (1s) 
+    const interval = setInterval(() => { 
+      setCounter((counter) => counter + 1); 
+      if(counter == -60){
+        setAviso("Falta 1 minuto");
+      }
+    }, 1000);
     return () => clearInterval(interval);
   }, [counter]);
 
 
-
-
   // GPS
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [heading, setHeading]   = useState<number | null>(null);
+  const lastLatitude  = useRef<number | null>(null);
+  const lastLongitude = useRef<number | null>(null);
+
   useEffect(() => {
 
      // chamada temporizada (5s) 
@@ -49,9 +52,10 @@ export default function Index() {
         if(heading != null){
           setHeading(heading);
         }
-        console.log(currentLocation.coords.latitude, currentLocation.coords.longitude, lastLatitude.current, lastLongitude.current, heading)   
+        // console.log(currentLocation.coords.latitude, currentLocation.coords.longitude, lastLatitude.current, lastLongitude.current, heading)   
       }
 
+      // guarda dados para proxima iteracao
       lastLatitude.current = currentLocation.coords.latitude;
       lastLongitude.current = currentLocation.coords.longitude;
     }, 5000);
@@ -80,12 +84,12 @@ export default function Index() {
 
       { /* quadros do meio */ }
       <View style={styles.ladoalado}>
-        <View style={styles.card}><Text>GPS Coords</Text>{location && (<Text style={styles.title}>{calcLat(location.coords.latitude)}, {calcLong(location.coords.longitude)}</Text>)}</View>
-        <View style={styles.card}><Text>Timestamp</Text>{location && (<Text style={styles.title}>{calcTime(location.timestamp)}</Text>)}</View>
+        <View style={styles.card}><Text>GPS Coords</Text>{(location != null) && (<Text style={styles.title}>{calcLat(location.coords.latitude)}, {calcLong(location.coords.longitude)}</Text>)}</View>
+        <View style={styles.card}><Text>Timestamp</Text>{(location != null) && (<Text style={styles.title}>{calcTime(location.timestamp)}</Text>)}</View>
       </View>
       <View style={styles.ladoalado}>
-        <View style={styles.card}><Text>Estimated Hdg</Text>{heading && (<Text style={styles.title}>{heading}</Text>)}</View>
-        <View style={styles.card}><Text>GPS Heading</Text>{location && (<Text style={styles.title}>{Math.round(location.coords.heading)}</Text>)}</View>
+        <View style={styles.card}><Text>GPS Heading</Text>{(location != null) && (<Text style={styles.title}>{Math.round(location.coords.heading)}</Text>)}</View>
+        <View style={styles.card}><Text>Estimated Hdg</Text>{(heading != null) && (<Text style={styles.title}>{heading}</Text>)}</View>        
       </View>      
       
 
@@ -103,7 +107,7 @@ export default function Index() {
       </View>
 
       { /* status bar */ }
-      <Input></Input>
+      <Input value={aviso} />
   
     </View>      
   
