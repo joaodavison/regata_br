@@ -69,45 +69,52 @@ export default function Index() {
   return (
     <View style={styles.container}>
 
+      { /* banner */ }
+      <View style={styles.rodape}> 
+        <Input style={styles.bigtext} value="RegataBR" />
+      </View>      
+
       { /* botoes superiores */ }
       <View style={styles.ladoalado}>
         <Pressable style={styles.pressable}>
-          <Text style={styles.title}>Z. Morta</Text>
+          <Text style={styles.medtext}>Z. Morta</Text>
           <Text>.</Text>
         </Pressable>
 
         <Pressable style={styles.pressable} >
-          <Text style={styles.title}>Boia Larg.</Text>
+          <Text style={styles.medtext}>Boia Larg.</Text>
           <Text>.</Text>
         </Pressable>        
       </View>      
 
       { /* quadros do meio */ }
       <View style={styles.ladoalado}>
-        <View style={styles.card}><Text>GPS Coords</Text>{(location != null) && (<Text style={styles.title}>{calcLat(location.coords.latitude)}, {calcLong(location.coords.longitude)}</Text>)}</View>
-        <View style={styles.card}><Text>Timestamp</Text>{(location != null) && (<Text style={styles.title}>{calcTime(location.timestamp)}</Text>)}</View>
+        <View style={styles.card}><Text style={styles.smalltext}>GPS Coords</Text>{(location != null) && (<Text style={styles.bigtext}>{calcLat(location.coords.latitude)}, {calcLong(location.coords.longitude)}</Text>)}</View>
+        <View style={styles.card}><Text style={styles.smalltext}>Timestamp</Text>{(location != null) && (<Text style={styles.bigtext}>{calcTime(location.timestamp)}</Text>)}</View>
       </View>
       <View style={styles.ladoalado}>
-        <View style={styles.card}><Text>GPS Heading</Text>{(location != null) && (<Text style={styles.title}>{Math.round(location.coords.heading)}</Text>)}</View>
-        <View style={styles.card}><Text>Estimated Hdg</Text>{(heading != null) && (<Text style={styles.title}>{heading}</Text>)}</View>        
+        <View style={styles.card}><Text style={styles.smalltext}>GPS Heading</Text>{(location != null) && (<Text style={styles.bigtext}>{Math.round(location.coords.heading)}</Text>)}</View>
+        <View style={styles.card}><Text style={styles.smalltext}>Estimated Hdg</Text>{(heading != null) && (<Text style={styles.bigtext}>{heading}</Text>)}</View>        
       </View>      
       
 
       { /* botoes inferiores */ }
       <View style={styles.ladoalado}>
         <Pressable style={styles.pressable} onPress={() => setCounter(-300)}>
-          <Text style={styles.title}>Contagem</Text>
+          <Text style={styles.medtext}>Contagem</Text>
           <Text>{counter}</Text>
         </Pressable>
 
         <Pressable style={styles.pressable} >
-          <Text style={styles.title}>Compara</Text>
+          <Text style={styles.medtext}>Compara</Text>
           <Text>.</Text>
         </Pressable>        
       </View>
 
       { /* status bar */ }
-      <Input value={aviso} />
+      <View style={styles.rodape}> 
+        <Input style={styles.message} value={aviso} />
+      </View>
   
     </View>      
   
@@ -120,31 +127,53 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 32,
     justifyContent: "center",
-    gap: 10
+    gap: 5
   },
   ladoalado:{
     flexDirection: "row",    
     gap: 16,
     padding: 5,
   },
+  rodape:{
+    flexDirection: "row",  
+    height: 100,  
+    alignItems: "flex-end",
+    padding: 5,
+  },  
   card:{ 
     width: 140,
     height: 140,
     backgroundColor: "#ecececff",
     justifyContent: "center",
     alignItems: "center",
+    fontSize: 28,
+    fontWeight: "bold",    
   },  
-  title:{
+  bigtext:{
+    color: "#334462",
+    fontSize: 36,
+    fontWeight: "bold",
+  },
+  medtext:{
     color: "#334462",
     fontSize: 28,
     fontWeight: "bold",
-  },
+  }, 
+  smalltext:{
+    color: "#334462",
+    fontSize: 20,
+    fontWeight: "bold",
+  },   
   pressable: {
     width: 140,
-    height: 100,
-    backgroundColor: "#eea826ff",
+    height: 70,
+    backgroundColor: "#ffd27dff",
     borderRadius: 15,
     justifyContent: "center",
     alignItems: "center",
-},
+  },
+  message: {
+    width: 300,
+    fontSize: 20,
+  },  
 })
