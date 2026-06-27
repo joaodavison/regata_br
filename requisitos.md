@@ -19,15 +19,9 @@ Nota: o termo "avisar" = emitir áudio + exibir no campo status + logar em arqui
 
 A cada 5s o RBR deve calcular a posição do veleiro (x0, y0) como as coordenadas de long e lat do GPS.
 
-A cada 5s o RBR deve calcular o rumo do veleiro a partir das coordenadas, considerando 10s de deslocamento:  
-    a = arctan (delta_long / delta_lat)  
-    se delta_long positivo e delta_lat positivo -> rumo = a  
-    se delta_long positivo e delta_lat negativo -> rumo = 360 - a  
-    se delta_long negativo e delta_lat positivo -> rumo = 180 - a  
-    se delta_long negativo e delta_lat negativo -> rumo = a -180  
+A cada 5s o RBR deve calcular o rumo do veleiro a partir das coordenadas, considerando 10s de deslocamento.
 
-A cada 5s o RBR deve calcular o SOG a partir das coordenadas, considerando 10s de deslocamento:  
-    sog = k * sqrt(delta_long² + delta_lat²)  
+A cada 5s o RBR deve calcular o SOG a partir das coordenadas, considerando 10s de deslocamento.
 
 A cada 5s o RBR deve calcular o VMG como SOG * cos(rumo).  
 

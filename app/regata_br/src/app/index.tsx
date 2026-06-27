@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Input } from "../components/input";
 
-import { calcHeading, calcLat, calcLong, calcTime } from './aux-functions';
+import { calcSog, calcHeading, calcLat, calcLong, calcTime } from './aux-functions';
 
 export default function Index() {
 
@@ -28,8 +28,9 @@ export default function Index() {
   // GPS
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [heading, setHeading]   = useState<number | null>(null);
-  const lastLatitude  = useRef<number | null>(null);
-  const lastLongitude = useRef<number | null>(null);
+  const [sog, setSog]   = useState<number | null>(null);
+  const lastLocation  = useRef<Location.LocationObject | null>(null);
+  // const lastLongitude = useRef<number | null>(null);
 
   useEffect(() => {
 
@@ -46,9 +47,13 @@ export default function Index() {
       const currentLocation = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.High});
       setLocation(currentLocation);
 
-      // calcula heading estimado
-      if (lastLatitude.current !== null && lastLongitude.current !== null) {
-        let heading = calcHeading(currentLocation.coords.latitude, currentLocation.coords.longitude, lastLatitude.current, lastLongitude.current);
+      // calcula speed over ground e heading estimado
+      if ((currentLocation != null) && (lastLocation.current !== null)) {
+        let sog = calcSog(currentLocation, lastLocation.current);
+        if(sog != null){
+          setSog(sog);
+        }
+        let heading = calcHeading(currentLocation, lastLocation.current);
         if(heading != null){
           setHeading(heading);
         }
@@ -56,8 +61,8 @@ export default function Index() {
       }
 
       // guarda dados para proxima iteracao
-      lastLatitude.current = currentLocation.coords.latitude;
-      lastLongitude.current = currentLocation.coords.longitude;
+      lastLocation.current = currentLocation;
+      // lastLongitude.current = currentLocation.coords.longitude;
     }, 5000);
 
     return () => clearInterval(interval);
@@ -90,11 +95,11 @@ export default function Index() {
       { /* quadros do meio */ }
       <View style={styles.ladoalado}>
         <View style={styles.card}><Text style={styles.smalltext}>GPS Coords</Text>{(location != null) && (<Text style={styles.bigtext}>{calcLat(location.coords.latitude)}, {calcLong(location.coords.longitude)}</Text>)}</View>
-        <View style={styles.card}><Text style={styles.smalltext}>Timestamp</Text>{(location != null) && (<Text style={styles.bigtext}>{calcTime(location.timestamp)}</Text>)}</View>
+        <View style={styles.card}><Text style={styles.smalltext}>SOG</Text>{(location != null) && (<Text style={styles.bigtext}>{sog} kt</Text>)}</View>
       </View>
       <View style={styles.ladoalado}>
-        <View style={styles.card}><Text style={styles.smalltext}>GPS Heading</Text>{(location != null) && (<Text style={styles.bigtext}>{Math.round(location.coords.heading)}</Text>)}</View>
-        <View style={styles.card}><Text style={styles.smalltext}>Estimated Hdg</Text>{(heading != null) && (<Text style={styles.bigtext}>{heading}</Text>)}</View>        
+        <View style={styles.card}><Text style={styles.smalltext}>GPS Heading</Text>{(location != null) && (<Text style={styles.bigtext}>{Math.round(location.coords.heading)}&deg;</Text>)}</View>
+        <View style={styles.card}><Text style={styles.smalltext}>Estimated Hdg</Text>{(heading != null) && (<Text style={styles.bigtext}>{heading}&deg;</Text>)}</View>        
       </View>      
       
 
