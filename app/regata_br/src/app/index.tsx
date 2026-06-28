@@ -66,19 +66,6 @@ export default function Index() {
         setHeading(Math.round(currentLocation.coords.heading));
         preHeading.current = currentLocation.coords.heading;  // armazena para proxima iteracao
       }
-      
-      // calcula speed over ground e heading estimado
-      // if ((currentLocation != null) && (lastLocation.current !== null)) {
-        // let sog = calcSog(currentLocation, lastLocation.current);
-        // if(sog != null){
-        //   setSog(sog);
-        // }
-        // let heading = calcHeading(currentLocation, lastLocation.current);
-        // if(heading != null){
-        //   setHeading(heading);
-        // }
-        // console.log(currentLocation.coords.latitude, currentLocation.coords.longitude, lastLatitude.current, lastLongitude.current, heading)   
-      // }
 
     }, 5000);
 
@@ -112,24 +99,24 @@ export default function Index() {
       { /* quadros do meio */ }
       <View style={styles.ladoalado}>
         <View style={styles.card}>
-          {(lastLocation != null) && (<Text style={styles.smalltext}>{calcLat(lastLocation.coords.latitude)}, {calcLong(lastLocation.coords.longitude)}</Text>)}
-          {(location != null) && (<Text style={styles.bigtext}>{calcLat(location.coords.latitude)}, {calcLong(location.coords.longitude)}</Text>)}</View>
-        <View style={styles.card}>
-          {(location != null) && (<Text style={styles.smalltext}>TBD</Text>)}
-          {(location != null) && (<Text style={styles.bigtext}>...</Text>)}
-        </View>
-      </View>
-      <View style={styles.ladoalado}>
-        <View style={styles.card}>
-          {(lastHeading != null) && (<Text style={styles.smalltext}>{convertHeading(lastHeading)}</Text>)}
+          {(lastHeading != null) && (<Text style={styles.smalltext}>RUMO {convertHeading(lastHeading)}</Text>)}
           {(heading != null) && (<Text style={styles.bigtext}>{convertHeading(heading)}</Text>)}
         </View>
         <View style={styles.card}>
-          {(lastSog != null) && (<Text style={styles.smalltext}>{lastSog} kt</Text>)}
+          {(lastSog != null) && (<Text style={styles.smalltext}>SOG {lastSog} kt</Text>)}
           {(sog != null) && (<Text style={styles.bigtext}>{sog} kt</Text>)}
         </View>        
-      </View>      
-      
+      </View> 
+      <View style={styles.ladoalado}>
+        <View style={styles.card}>
+          {(lastLocation != null) && (<Text style={styles.smalltext}>VENTO {calcLat(lastLocation.coords.latitude)}, {calcLong(lastLocation.coords.longitude)}</Text>)}
+          {(location != null) && (<Text style={styles.bigtext}>{calcLat(location.coords.latitude)}, {calcLong(location.coords.longitude)}</Text>)}</View>
+        <View style={styles.card}>
+          {(location != null) && (<Text style={styles.smalltext}>VMG </Text>)}
+          {(location != null) && (<Text style={styles.bigtext}>...</Text>)}
+        </View>
+      </View>
+           
 
       { /* botoes inferiores */ }
       <View style={styles.ladoalado}>
@@ -184,7 +171,7 @@ const styles = StyleSheet.create({
   },  
   bigtext:{
     color: "#334462",
-    fontSize: 36,
+    fontSize: 40,
     fontWeight: "bold",
   },
   medtext:{
