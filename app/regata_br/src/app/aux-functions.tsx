@@ -55,6 +55,26 @@ export function calcSog(currentLocation:Location.LocationObject, lastLocation:Lo
   return sog;
 }
 
+export function convertHeading(hdg_degrees:number){
+
+  // 1. Keep degrees between 0 and 359 using a modulo operation
+  const normalizedDegrees = ((hdg_degrees % 360) + 360) % 360;
+
+  // 2. Define the 8 compass points in clockwise order
+  const directions = [
+    "N", "NE", "E", "SE",  
+    "S", "SW", "W", "NW"
+  ];
+
+  // 3. Divide 360 by 8 points = 45 degrees per sector
+  const sectorWidth = 45;
+
+  // 4. Rounding creates an Offset by half a sector (22.5°) 
+  const index = Math.round(normalizedDegrees / sectorWidth) % 8;
+
+  return directions[index];
+}
+
 // export function funcContagem(){
 //     const tempo = 10
 //     return Alert.alert(`T = ${tempo}`)
