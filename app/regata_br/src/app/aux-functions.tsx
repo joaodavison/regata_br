@@ -75,6 +75,20 @@ export function convertHeading(hdg_degrees:number){
   return directions[index];
 }
 
+export function calcBissetriz(o1:number, o2:number){
+    // Calcula a diferença angular
+    let dif = o2 - o1;
+    
+    // Normaliza a diferença para o intervalo -180 a 180
+    dif = ((dif % 360) + 540) % 360 - 180;
+    
+    // Calcula o ângulo da bissetriz
+    let bissetriz = (o1 + dif / 2) % 360;
+    
+    // Retorna o ângulo sempre positivo (0 a 360 graus)
+    return bissetriz < 0 ? bissetriz + 360 : bissetriz;
+}
+
 // export function funcContagem(){
 //     const tempo = 10
 //     return Alert.alert(`T = ${tempo}`)

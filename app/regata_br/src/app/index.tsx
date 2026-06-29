@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Pressable, Text, View } from 'react-native';
 import { Input } from "../components/input";
 import { styles } from "./styles"
-import { convertHeading, calcSog, calcHeading, calcLat, calcLong, calcTime } from './aux-functions';
+import { calcBissetriz, convertHeading, calcLat, calcLong } from './aux-functions';
 
 export default function Index() {
 
@@ -77,18 +77,15 @@ export default function Index() {
     return () => clearInterval(interval);
   }, []);
 
-  function calcZMorta(){
-    console.log(o1.current)
-    console.log(o2.current)
+  function botaoZMorta(){
     if(o1.current == null){
       o1.current = heading;
       setAviso("Z_MORTA 1 definida como " + convertHeading(o1.current));
     }
     else if(o2.current == null){
       o2.current = heading;
-      angulo_vento.current = 0.5* (o2.current + o1.current) ;
+      angulo_vento.current = calcBissetriz(o2.current, o1.current);
       setAviso("Vento calculado como " + convertHeading(angulo_vento.current));
-
     }
     else{
       o1.current = null;
@@ -96,7 +93,6 @@ export default function Index() {
       angulo_vento.current = null;
       setAviso("Reset do vento estimado");
     }
-
   }
 
 
@@ -113,8 +109,10 @@ export default function Index() {
       { /* botoes superiores */ }
       <View style={styles.ladoalado}>
         <Pressable style={styles.pressable}>
-          <Text style={styles.medtext} onPress={() => calcZMorta()}>Zona Morta</Text>
-          {(o1 != null) && (<Text>o1</Text>)}
+          <Text style={styles.medtext} onPress={() => botaoZMorta()}>Zona Morta</Text>
+          {(o1.current == null) && (o2.current == null) && (<Text>captura primeira proa</Text>)}
+          {(o1.current != null) && (o2.current == null) && (<Text>captura segunda proa</Text>)}
+          {(o1.current != null) && (o2.current != null) && (<Text>vento capturado</Text>)}
         </Pressable>
 
         <Pressable style={styles.pressable} >
@@ -138,6 +136,7 @@ export default function Index() {
         <View style={styles.card}>
           {(lastLocation != null) && (<Text style={styles.smalltext}>VENTO</Text>)}
           {(angulo_vento.current != null) && (<Text style={styles.bigtext}>{convertHeading(angulo_vento.current)}</Text>)}
+          {(angulo_vento.current == null) && (<Text style={styles.bigtext}>?</Text>)}
           </View>
         <View style={styles.card}>
           {(location != null) && (<Text style={styles.smalltext}>VMG </Text>)}
