@@ -1,8 +1,8 @@
 import * as Location from 'expo-location';
 import { useEffect, useRef, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { Input } from "../components/input";
-
+import { styles } from "./styles"
 import { convertHeading, calcSog, calcHeading, calcLat, calcLong, calcTime } from './aux-functions';
 
 export default function Index() {
@@ -38,6 +38,11 @@ export default function Index() {
   const [lastSog, setLastSog] = useState<number | null>(null);
   const preSog  = useRef<number | null>(null);
 
+  // Valores processados
+  let o1  = useRef<number | null>(null);
+  let o2  = useRef<number | null>(null);
+  let angulo_vento  = useRef<number | null>(null);
+
 
   useEffect(() => {
 
@@ -72,6 +77,28 @@ export default function Index() {
     return () => clearInterval(interval);
   }, []);
 
+  function calcZMorta(){
+    console.log(o1.current)
+    console.log(o2.current)
+    if(o1.current == null){
+      o1.current = heading;
+      setAviso("Z_MORTA 1 definida como " + convertHeading(o1.current));
+    }
+    else if(o2.current == null){
+      o2.current = heading;
+      angulo_vento.current = 0.5* (o2.current + o1.current) ;
+      setAviso("Vento calculado como " + convertHeading(angulo_vento.current));
+
+    }
+    else{
+      o1.current = null;
+      o2.current = null;
+      angulo_vento.current = null;
+      setAviso("Reset do vento estimado");
+    }
+
+  }
+
 
 
   // componentes renderizados no app
@@ -80,14 +107,14 @@ export default function Index() {
 
       { /* banner */ }
       <View style={styles.rodape}> 
-        <Input style={styles.bigtext} value="RegataBR" />
+        <Text style={styles.bigtext}>RegataBR</Text> 
       </View>      
 
       { /* botoes superiores */ }
       <View style={styles.ladoalado}>
         <Pressable style={styles.pressable}>
-          <Text style={styles.medtext}>Zona Morta</Text>
-          <Text>.</Text>
+          <Text style={styles.medtext} onPress={() => calcZMorta()}>Zona Morta</Text>
+          {(o1 != null) && (<Text>o1</Text>)}
         </Pressable>
 
         <Pressable style={styles.pressable} >
@@ -109,11 +136,12 @@ export default function Index() {
       </View> 
       <View style={styles.ladoalado}>
         <View style={styles.card}>
-          {(lastLocation != null) && (<Text style={styles.smalltext}>VENTO {calcLat(lastLocation.coords.latitude)}, {calcLong(lastLocation.coords.longitude)}</Text>)}
-          {(location != null) && (<Text style={styles.bigtext}>{calcLat(location.coords.latitude)}, {calcLong(location.coords.longitude)}</Text>)}</View>
+          {(lastLocation != null) && (<Text style={styles.smalltext}>VENTO</Text>)}
+          {(angulo_vento.current != null) && (<Text style={styles.bigtext}>{convertHeading(angulo_vento.current)}</Text>)}
+          </View>
         <View style={styles.card}>
           {(location != null) && (<Text style={styles.smalltext}>VMG </Text>)}
-          {(location != null) && (<Text style={styles.bigtext}>...</Text>)}
+          {(location != null) && (<Text style={styles.bigtext}>{calcLat(location.coords.latitude)}, {calcLong(location.coords.longitude)}</Text>)}
         </View>
       </View>
            
@@ -141,59 +169,3 @@ export default function Index() {
   );
 }
 
-// estilos da tela principal
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: "center",
-    gap: 5
-  },
-  ladoalado:{
-    flexDirection: "row",    
-    gap: 16,
-    padding: 5,
-  },
-  rodape:{
-    flexDirection: "row",  
-    height: 100,  
-    alignItems: "flex-end",
-    padding: 5,
-  },  
-  card:{ 
-    width: 160,
-    height: 140,
-    backgroundColor: "#f3f3f3ff",
-    justifyContent: "center",
-    alignItems: "center",
-    fontSize: 28,
-    fontWeight: "bold",    
-  },  
-  bigtext:{
-    color: "#334462",
-    fontSize: 40,
-    fontWeight: "bold",
-  },
-  medtext:{
-    color: "#334462",
-    fontSize: 28,
-    fontWeight: "bold",
-  }, 
-  smalltext:{
-    color: "#334462",
-    fontSize: 20,
-    fontWeight: "bold",
-  },   
-  pressable: {
-    width: 160,
-    height: 70,
-    backgroundColor: "#ffd27dff",
-    borderRadius: 15,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  message: {
-    width: 320,
-    fontSize: 20,
-  },  
-})
