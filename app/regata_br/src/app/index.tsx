@@ -14,7 +14,7 @@ export default function Index() {
   const [counter, setCounter] = useState(-300) // 5 min
 
   useEffect(() => {
-    // chamada temporizada (1s) 
+    // chamada temporizada (rapida) 
     const interval = setInterval(() => { 
       setCounter((counter) => counter + 1); 
       if(counter == -60){
@@ -53,7 +53,7 @@ export default function Index() {
 
   useEffect(() => {
 
-     // chamada temporizada (5s) 
+     // chamada temporizada (lenta) 
     const interval = setInterval(async () => {
 
       // solicita a permissão de acesso ao GPS
@@ -85,10 +85,11 @@ export default function Index() {
           setDisplayLastHeading(preValidHeading.current);
           preValidHeading.current = newConsHdg; // guarda para a proxima iteracao
           setDisplayHeading(newConsHdg);
+          setAviso("Novo heading " + (newConsHdg) + " deg");
         }
       }
 
-    }, 5000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, []);
@@ -96,12 +97,12 @@ export default function Index() {
   function botaoZMorta(){
     if(o1.current == null){
       o1.current = displayHeading;
-      setAviso("Z_MORTA 1 definida como " + (o1.current));
+      setAviso("Z_MORTA 1 definida como " + (o1.current) + " deg");
     }
     else if(o2.current == null){
       o2.current = displayHeading;
       angulo_vento.current = calcBissetriz(o2.current, o1.current);
-      setAviso("Z_MORTA 2 definida como " + (o2.current));
+      setAviso("Z_MORTA 2 definida como " + (o2.current) + " deg");
     }
     else{
       o1.current = null;

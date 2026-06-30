@@ -114,7 +114,11 @@ export function arrayFilterSog(array){
 
 export function arrayFilterHdg(array){
   for (let i = array.length - 2; i >= 0; i--){
-    if(absDiff(array[i], array.at(-1)) < 30){ // compara ultimo valor com cada valor anterior
+    let diff = absDiff(array[i], array.at(-1));
+    if(diff > 180){
+      diff = 360 - diff;
+    }
+    if(diff < 30){ // compara ultimo valor com cada valor anterior
       console.log(array[i] + "--"  + array.at(-1))
       return Math.round((array[i] + array.at(-1)) / 2); // devolve a media arredondada
     }
