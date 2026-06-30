@@ -17,23 +17,21 @@ Nota: o termo "avisar" = emitir áudio + exibir no campo status + logar em arqui
 
 # Medições do GPS
 
-A cada 5s o RBR deve calcular a posição do veleiro (x0, y0) como as coordenadas de long e lat do GPS.
+A cada 10s o RBR deve ler a posição do veleiro (x0, y0) como as coordenadas de long e lat do GPS.
 
-A cada 5s o RBR deve calcular o rumo do veleiro a partir das coordenadas, considerando 10s de deslocamento.
+A cada 10s o RBR deve calcular o rumo do veleiro como a média entre o rumo atual e rumo anterior se estes estiverem próximos (diferença de 30 deg).
 
-A cada 5s o RBR deve calcular o SOG a partir das coordenadas, considerando 10s de deslocamento.
+A cada 10s o RBR deve calcular o SOG (spped over ground) do veleiro como a média entre a velocidade atual e velocidade anterior se estas estiverem próximas (diferença de 0.3 kt).
 
-A cada 5s o RBR deve calcular o VMG como SOG * cos(rumo).  
+A cada 10s o RBR deve calcular o VMG como SOG * cos(angulo_vento - rumo).  
 
 # Calculo da direção do vento estimado
 
 INFO: Como o sistema não possui sensor de direção do vento, este é estimado pela bissetriz dos ângulos que o veleiro faz em Z_MORTA fechada com vela à direita e com vela à esquerda.
 
-Se o botão Z_MORTA for pressionado e o rumo não for constante pelas últimas 2 medidas, RBR deve avisar "Manter rumo e tentar novamente".
+Se o botão Z_MORTA for pressionado pela primeira vez, RBR deve armazenar o ângulo como o1 e avisar "Z_MORTA 1 definida como XXX" (XXX em ponto cardinal no audio e graus no log)
 
-Se o botão Z_MORTA for pressionado pela primeira vez e o rumo for constante pelas últimas 2 medidas, RBR deve armazenar o ângulo como o1 e avisar "Z_MORTA 1 definida como XXX" (XXX em ponto cardinal no audio e graus no log)
-
-Se o botão Z_MORTA for pressionado após o1 definido e o rumo for constante pelas últimas 2 medidas, RBR deve armazenar o ângulo como o2 e avisar "Z_MORTA 2 definida como XXX" (XXX em ponto cardinal no audio e graus no log)
+Se o botão Z_MORTA for pressionado após o1 definido, RBR deve armazenar o ângulo como o2 e avisar "Z_MORTA 2 definida como XXX" (XXX em ponto cardinal no audio e graus no log)
 
 Quando o1 e o2 estiverem definidos, RBR deve calcular angulo_vento como a bissetriz entre o1 e o1 e avisar "Vento calculado como XXX" (XXX em ponto cardinal no audio e graus no log)
 

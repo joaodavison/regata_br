@@ -20,8 +20,8 @@ export default function Index() {
       if(counter == -60){
         setAviso("Falta 1 minuto");
       }
-      if(counter == -10){
-        setAviso("Faltam 10 segundos");
+      if((counter <= -10) && (counter > 0){
+        setAviso("Faltam " + counter + " segundos");
       }
       if(counter == 0){
         setAviso("Valendo!");
@@ -33,7 +33,7 @@ export default function Index() {
 
   // GPS
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
-  const [lastLocation, setLastLocation] = useState<Location.LocationObject | null>(null);
+  // const [lastLocation, setLastLocation] = useState<Location.LocationObject | null>(null);
 
   const [displayHeading, setDisplayHeading] = useState<number | null>(null);
   const [displayLastHeading, setDisplayLastHeading] = useState<number | null>(null);

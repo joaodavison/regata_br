@@ -112,14 +112,18 @@ export function arrayFilterSog(array){
   return null;
 }
 
+function absAngleDiff(a:number, b:number){
+  let diff = absDiff(a, b);
+  if(diff > 180){
+    diff = 360 - diff;
+  }
+  return diff;
+}
+
 export function arrayFilterHdg(array){
   for (let i = array.length - 2; i >= 0; i--){
-    let diff = absDiff(array[i], array.at(-1));
-    if(diff > 180){
-      diff = 360 - diff;
-    }
-    if(diff < 30){ // compara ultimo valor com cada valor anterior
-      console.log(array[i] + "--"  + array.at(-1))
+    if(absAngleDiff(array[i], array.at(-1)) < 30){ // compara ultimo valor com cada valor anterior
+      // console.log(array[i] + "--"  + array.at(-1))
       return Math.round((array[i] + array.at(-1)) / 2); // devolve a media arredondada
     }
   }
