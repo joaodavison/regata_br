@@ -20,7 +20,7 @@ export default function Index() {
       if(counter == -60){
         setAviso("Falta 1 minuto");
       }
-      if((counter <= -10) && (counter > 0){
+      if((counter <= -10) && (counter > 0)){
         setAviso("Faltam " + counter + " segundos");
       }
       if(counter == 0){
@@ -85,7 +85,7 @@ export default function Index() {
           setDisplayLastHeading(preValidHeading.current);
           preValidHeading.current = newConsHdg; // guarda para a proxima iteracao
           setDisplayHeading(newConsHdg);
-          setAviso("Novo heading " + (newConsHdg) + " deg");
+          setAviso("Novo heading " + (newConsHdg) + "deg");
         }
       }
 
@@ -97,12 +97,12 @@ export default function Index() {
   function botaoZMorta(){
     if(o1.current == null){
       o1.current = displayHeading;
-      setAviso("Z_MORTA 1 definida como " + (o1.current) + " deg");
+      setAviso("Z_MORTA 1 definida como " + (o1.current) + "deg");
     }
     else if(o2.current == null){
       o2.current = displayHeading;
-      angulo_vento.current = calcBissetriz(o2.current, o1.current);
-      setAviso("Z_MORTA 2 definida como " + (o2.current) + " deg");
+      anguloVento.current = calcBissetriz(o2.current, o1.current);
+      setAviso("Z_MORTA 2 definida como " + (o2.current) + "deg");
     }
     else{
       o1.current = null;
@@ -151,7 +151,7 @@ export default function Index() {
       </View> 
       <View style={styles.ladoalado}>
         <View style={styles.card}>
-          {(lastLocation != null) && (<Text style={styles.smalltext}>VENTO</Text>)}
+          { (<Text style={styles.smalltext}>VENTO</Text>)}
           {(anguloVento.current != null) && (<Text style={styles.bigtext}>{convertHeading(anguloVento.current)}</Text>)}
           {(anguloVento.current == null) && (<Text style={styles.bigtext}>?</Text>)}
           </View>
