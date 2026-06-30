@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Pressable, Text, View } from 'react-native';
 import { Input } from "../components/input";
 import { styles } from "./styles"
-import { arrayDesloca, calcBissetriz, convertHeading, calcLat, calcLong } from './aux-functions';
+import { roundFirstDecimal, arrayFilterSog, arrayDesloca, calcBissetriz, convertHeading, calcLat, calcLong } from './aux-functions';
 
 export default function Index() {
 
@@ -19,6 +19,12 @@ export default function Index() {
       setCounter((counter) => counter + 1); 
       if(counter == -60){
         setAviso("Falta 1 minuto");
+      }
+      if(counter == -10){
+        setAviso("Faltam 10 segundos");
+      }
+      if(counter == 0){
+        setAviso("Valendo!");
       }
     }, 1000);
     return () => clearInterval(interval);
@@ -61,9 +67,13 @@ export default function Index() {
         setLocation(currentLocation);
 
         // trata SOG
-        setLastSog(sogArray.at(-1));
-        setSog(Math.round(10 * currentLocation.coords.speed) / 10);
-        arrayDesloca(sogArray, Math.round(10 * currentLocation.coords.speed) / 10);
+        arrayDesloca(sogArray, roundFirstDecimal(currentLocation.coords.speed));
+        console.log(sogArray)
+        let newConsSog = arrayFilterSog(sogArray);
+        if(newConsSog != null){ // encontra valor consolidado, atualiza tela
+          setLastSog(sog);
+          setSog(roundFirstDecimal(newConsSog));
+        }
 
         // trata Heading
         setLastHeading(headingArray.at(-1));

@@ -92,7 +92,25 @@ export function calcBissetriz(o1:number, o2:number){
 export function arrayDesloca(array, novoValor:number){
         array.splice(0, 1) // remove first item
         array.push(novoValor);
-        console.log(array);
+        // console.log(array);
+}
+
+export function roundFirstDecimal(a:number){
+  return Math.round(10 * a) / 10;
+}
+
+function absDiff(a:number, b:number){
+  return Math.abs(a - b);
+}
+
+export function arrayFilterSog(array){
+  for (let i = array.length - 2; i >= 0; i--){
+    if(absDiff(array[i], array.at(-1)) < 0.3){ // compara ultimo valor com cada valor anterior
+      console.log(array[i] + "--"  + array.at(-1))
+      return (array[i] + array.at(-1)) / 2; // devolve a media
+    }
+  }
+  return null;
 }
 
 // export function funcContagem(){
