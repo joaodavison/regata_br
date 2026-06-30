@@ -89,6 +89,12 @@ export function calcBissetriz(o1:number, o2:number){
     return bissetriz < 0 ? bissetriz + 360 : bissetriz;
 }
 
+export function arrayDesloca(array, novoValor:number){
+        array.splice(0, 1) // remove first item
+        array.push(novoValor);
+        console.log(array);
+}
+
 // export function funcContagem(){
 //     const tempo = 10
 //     return Alert.alert(`T = ${tempo}`)

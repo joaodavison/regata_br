@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Pressable, Text, View } from 'react-native';
 import { Input } from "../components/input";
 import { styles } from "./styles"
-import { calcBissetriz, convertHeading, calcLat, calcLong } from './aux-functions';
+import { arrayDesloca, calcBissetriz, convertHeading, calcLat, calcLong } from './aux-functions';
 
 export default function Index() {
 
@@ -28,20 +28,19 @@ export default function Index() {
   // GPS
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [lastLocation, setLastLocation] = useState<Location.LocationObject | null>(null);
-  const preLocation  = useRef<Location.LocationObject | null>(null);
 
   const [heading, setHeading] = useState<number | null>(null);
   const [lastHeading, setLastHeading] = useState<number | null>(null);
-  const preHeading  = useRef<number | null>(null);
+  let headingArray  = [0, 0, 0, 0, 0, 0];
 
   const [sog, setSog] = useState<number | null>(null);
   const [lastSog, setLastSog] = useState<number | null>(null);
-  const preSog  = useRef<number | null>(null);
+  let sogArray = [0, 0, 0, 0, 0, 0];
 
   // Valores processados
   let o1  = useRef<number | null>(null);
   let o2  = useRef<number | null>(null);
-  let angulo_vento  = useRef<number | null>(null);
+  let anguloVento  = useRef<number | null>(null);
 
 
   useEffect(() => {
@@ -59,17 +58,17 @@ export default function Index() {
       const currentLocation = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.High});
   
       if(currentLocation != null){
-        setLastLocation(preLocation.current);
         setLocation(currentLocation);
-        preLocation.current = currentLocation;
 
-        setLastSog(preSog.current);
+        // trata SOG
+        setLastSog(sogArray.at(-1));
         setSog(Math.round(10 * currentLocation.coords.speed) / 10);
-        preSog.current = Math.round(10 * currentLocation.coords.speed) / 10; // armazena para proxima iteracao
+        arrayDesloca(sogArray, Math.round(10 * currentLocation.coords.speed) / 10);
 
-        setLastHeading(preHeading.current);
+        // trata Heading
+        setLastHeading(headingArray.at(-1));
         setHeading(Math.round(currentLocation.coords.heading));
-        preHeading.current = currentLocation.coords.heading;  // armazena para proxima iteracao
+        arrayDesloca(headingArray, Math.round(currentLocation.coords.heading));
       }
 
     }, 5000);
@@ -80,17 +79,17 @@ export default function Index() {
   function botaoZMorta(){
     if(o1.current == null){
       o1.current = heading;
-      setAviso("Z_MORTA 1 definida como " + convertHeading(o1.current));
+      setAviso("Z_MORTA 1 definida como " + (o1.current));
     }
     else if(o2.current == null){
       o2.current = heading;
       angulo_vento.current = calcBissetriz(o2.current, o1.current);
-      setAviso("Vento calculado como " + convertHeading(angulo_vento.current));
+      setAviso("Z_MORTA 2 definida como " + (o2.current));
     }
     else{
       o1.current = null;
       o2.current = null;
-      angulo_vento.current = null;
+      anguloVento.current = null;
       setAviso("Reset do vento estimado");
     }
   }
@@ -112,7 +111,7 @@ export default function Index() {
           <Text style={styles.medtext} onPress={() => botaoZMorta()}>Zona Morta</Text>
           {(o1.current == null) && (o2.current == null) && (<Text>captura primeira proa</Text>)}
           {(o1.current != null) && (o2.current == null) && (<Text>captura segunda proa</Text>)}
-          {(o1.current != null) && (o2.current != null) && (<Text>vento capturado</Text>)}
+          {(o1.current != null) && (o2.current != null) && (<Text>reset zona morta</Text>)}
         </Pressable>
 
         <Pressable style={styles.pressable} >
@@ -135,8 +134,8 @@ export default function Index() {
       <View style={styles.ladoalado}>
         <View style={styles.card}>
           {(lastLocation != null) && (<Text style={styles.smalltext}>VENTO</Text>)}
-          {(angulo_vento.current != null) && (<Text style={styles.bigtext}>{convertHeading(angulo_vento.current)}</Text>)}
-          {(angulo_vento.current == null) && (<Text style={styles.bigtext}>?</Text>)}
+          {(anguloVento.current != null) && (<Text style={styles.bigtext}>{convertHeading(anguloVento.current)}</Text>)}
+          {(anguloVento.current == null) && (<Text style={styles.bigtext}>?</Text>)}
           </View>
         <View style={styles.card}>
           {(location != null) && (<Text style={styles.smalltext}>VMG </Text>)}
