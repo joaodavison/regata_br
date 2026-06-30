@@ -106,8 +106,17 @@ function absDiff(a:number, b:number){
 export function arrayFilterSog(array){
   for (let i = array.length - 2; i >= 0; i--){
     if(absDiff(array[i], array.at(-1)) < 0.3){ // compara ultimo valor com cada valor anterior
+      return roundFirstDecimal((array[i] + array.at(-1)) / 2); // devolve a media arredondada
+    }
+  }
+  return null;
+}
+
+export function arrayFilterHdg(array){
+  for (let i = array.length - 2; i >= 0; i--){
+    if(absDiff(array[i], array.at(-1)) < 30){ // compara ultimo valor com cada valor anterior
       console.log(array[i] + "--"  + array.at(-1))
-      return (array[i] + array.at(-1)) / 2; // devolve a media
+      return Math.round((array[i] + array.at(-1)) / 2); // devolve a media arredondada
     }
   }
   return null;

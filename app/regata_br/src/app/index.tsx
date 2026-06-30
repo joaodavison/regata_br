@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Pressable, Text, View } from 'react-native';
 import { Input } from "../components/input";
 import { styles } from "./styles"
-import { roundFirstDecimal, arrayFilterSog, arrayDesloca, calcBissetriz, convertHeading, calcLat, calcLong } from './aux-functions';
+import { roundFirstDecimal, arrayFilterHdg, arrayFilterSog, arrayDesloca, calcBissetriz, convertHeading, calcLat, calcLong } from './aux-functions';
 
 export default function Index() {
 
@@ -35,13 +35,15 @@ export default function Index() {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [lastLocation, setLastLocation] = useState<Location.LocationObject | null>(null);
 
-  const [heading, setHeading] = useState<number | null>(null);
-  const [lastHeading, setLastHeading] = useState<number | null>(null);
-  let headingArray  = [0, 0, 0, 0, 0, 0];
-
-  const [sog, setSog] = useState<number | null>(null);
-  const [lastSog, setLastSog] = useState<number | null>(null);
-  let sogArray = [0, 0, 0, 0, 0, 0];
+  const [displayHeading, setDisplayHeading] = useState<number | null>(null);
+  const [displayLastHeading, setDisplayLastHeading] = useState<number | null>(null);
+  let headingArray  = [0, 0, 0];
+  const preValidHeading  = useRef<number | null>(null); 
+  
+  const [displaySog, setDisplaySog] = useState<number | null>(null);
+  const [displayLastSog, setDisplayLastSog] = useState<number | null>(null);
+  let sogArray = [0, 0, 0];
+  const preValidSog  = useRef<number | null>(null);
 
   // Valores processados
   let o1  = useRef<number | null>(null);
@@ -68,17 +70,22 @@ export default function Index() {
 
         // trata SOG
         arrayDesloca(sogArray, roundFirstDecimal(currentLocation.coords.speed));
-        console.log(sogArray)
         let newConsSog = arrayFilterSog(sogArray);
         if(newConsSog != null){ // encontra valor consolidado, atualiza tela
-          setLastSog(sog);
-          setSog(roundFirstDecimal(newConsSog));
+          setDisplayLastSog(preValidSog.current);
+          preValidSog.current = newConsSog; // guarda para a proxima iteracao
+          setDisplaySog(newConsSog);
         }
 
         // trata Heading
-        setLastHeading(headingArray.at(-1));
-        setHeading(Math.round(currentLocation.coords.heading));
         arrayDesloca(headingArray, Math.round(currentLocation.coords.heading));
+        console.log(headingArray)
+        let newConsHdg = arrayFilterHdg(headingArray);
+        if(newConsHdg != null){ // encontra valor consolidado, atualiza tela
+          setDisplayLastHeading(preValidHeading.current);
+          preValidHeading.current = newConsHdg; // guarda para a proxima iteracao
+          setDisplayHeading(newConsHdg);
+        }
       }
 
     }, 5000);
@@ -88,11 +95,11 @@ export default function Index() {
 
   function botaoZMorta(){
     if(o1.current == null){
-      o1.current = heading;
+      o1.current = displayHeading;
       setAviso("Z_MORTA 1 definida como " + (o1.current));
     }
     else if(o2.current == null){
-      o2.current = heading;
+      o2.current = displayHeading;
       angulo_vento.current = calcBissetriz(o2.current, o1.current);
       setAviso("Z_MORTA 2 definida como " + (o2.current));
     }
@@ -133,12 +140,12 @@ export default function Index() {
       { /* quadros do meio */ }
       <View style={styles.ladoalado}>
         <View style={styles.card}>
-          {(lastHeading != null) && (<Text style={styles.smalltext}>RUMO {convertHeading(lastHeading)}</Text>)}
-          {(heading != null) && (<Text style={styles.bigtext}>{convertHeading(heading)}</Text>)}
+          {(displayLastHeading != null) && (<Text style={styles.smalltext}>RUMO {convertHeading(displayLastHeading)}</Text>)}
+          {(displayHeading != null) && (<Text style={styles.bigtext}>{convertHeading(displayHeading)}</Text>)}
         </View>
         <View style={styles.card}>
-          {(lastSog != null) && (<Text style={styles.smalltext}>SOG {lastSog} kt</Text>)}
-          {(sog != null) && (<Text style={styles.bigtext}>{sog} kt</Text>)}
+          {(displayLastSog != null) && (<Text style={styles.smalltext}>SOG {displayLastSog} kt</Text>)}
+          {(displaySog != null) && (<Text style={styles.bigtext}>{displaySog} kt</Text>)}
         </View>        
       </View> 
       <View style={styles.ladoalado}>
