@@ -23,12 +23,14 @@ export default function Index() {
       setCounter((counter) => counter + 1); 
       if(counter == -60){
         setAviso("Falta 1 minuto");
+        playBeep();
       }
       if((counter <= -10) && (counter > 0)){
         setAviso("Faltam " + counter + " segundos");
       }
       if(counter == 0){
         setAviso("Valendo!");
+        playBeep();
       }
     }, 1000);
     return () => clearInterval(interval);
@@ -79,6 +81,8 @@ export default function Index() {
           setDisplayLastSog(preValidSog.current);
           preValidSog.current = newConsSog; // guarda para a proxima iteracao
           setDisplaySog(newConsSog);
+          setAviso("Novo sog " + (newConsSog) + "kt");
+          playBeep();
         }
 
         // trata Heading
@@ -90,6 +94,7 @@ export default function Index() {
           preValidHeading.current = newConsHdg; // guarda para a proxima iteracao
           setDisplayHeading(newConsHdg);
           setAviso("Novo heading " + (newConsHdg) + "deg");
+          playBeep();
         }
       }
 
@@ -114,8 +119,6 @@ export default function Index() {
       anguloVento.current = null;
       setAviso("Reset do vento estimado");
     }
-
-    playBeep();
   }
 
   async function playBeep() {
@@ -156,12 +159,16 @@ export default function Index() {
       { /* quadros do meio */ }
       <View style={styles.ladoalado}>
         <View style={styles.card}>
-          {(displayLastHeading != null) && (<Text style={styles.smalltext}>RUMO {convertHeading(displayLastHeading)}</Text>)}
+          { (<Text style={styles.smalltext}>RUMO</Text>)}      
           {(displayHeading != null) && (<Text style={styles.bigtext}>{convertHeading(displayHeading)}</Text>)}
+          {(displayHeading == null) && (<Text style={styles.bigtext}>?</Text>)}
+          {(displayLastHeading != null) && (<Text style={styles.smalltext}>pre: {convertHeading(displayLastHeading)}</Text>)}
         </View>
         <View style={styles.card}>
-          {(displayLastSog != null) && (<Text style={styles.smalltext}>SOG {displayLastSog} kt</Text>)}
+          { (<Text style={styles.smalltext}>SOG</Text>)}          
           {(displaySog != null) && (<Text style={styles.bigtext}>{displaySog} kt</Text>)}
+          {(displaySog == null) && (<Text style={styles.bigtext}>?</Text>)}
+          {(displayLastSog != null) && (<Text style={styles.smalltext}>pre: {displayLastSog} kt</Text>)}
         </View>        
       </View> 
       <View style={styles.ladoalado}>
