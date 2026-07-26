@@ -103,7 +103,7 @@ function absDiff(a:number, b:number){
   return Math.abs(a - b);
 }
 
-export function arrayFilterSog(array){
+export function arrayFilterSog(array){ // TO DO: repetir algoritmo do arrayFilterHdg
   for (let i = array.length - 2; i >= 0; i--){
     if(absDiff(array[i], array.at(-1)) < 0.3){ // compara ultimo valor com cada valor anterior
       return roundFirstDecimal((array[i] + array.at(-1)) / 2); // devolve a media arredondada
@@ -121,13 +121,23 @@ function absAngleDiff(a:number, b:number){
 }
 
 export function arrayFilterHdg(array){
+  let acc = array.at(-1);
+  let matches = 1;
+
   for (let i = array.length - 2; i >= 0; i--){
     if(absAngleDiff(array[i], array.at(-1)) < 30){ // compara ultimo valor com cada valor anterior
       // console.log(array[i] + "--"  + array.at(-1))
-      return Math.round((array[i] + array.at(-1)) / 2); // devolve a media arredondada
-    }
+      // adiciona ao calculo da media
+      acc = acc + array[i];
+      matches++;
+    }    
   }
-  return null;
+  if(matches < 5){ // nao encontrou muitos matches
+    return null;
+  }
+  else{
+    return Math.round(acc / matches); // devolve a media arredondada
+  }
 }
 
 // export function funcContagem(){
