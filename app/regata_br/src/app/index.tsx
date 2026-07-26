@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Pressable, Text, View } from 'react-native';
 import { Input } from "../components/input";
 import { styles } from "./styles"
+import { Audio } from 'expo-av';
 import { roundFirstDecimal, arrayFilterHdg, arrayFilterSog, arrayDesloca, calcBissetriz, convertHeading, calcLat, calcLong } from './aux-functions';
 
 export default function Index() {
@@ -12,6 +13,9 @@ export default function Index() {
 
   // Timer
   const [counter, setCounter] = useState(-300) // 5 min
+
+  // Sound
+  const [sound, setSound] = useState(null);
 
   useEffect(() => {
     // chamada temporizada (rapida) 
@@ -37,12 +41,12 @@ export default function Index() {
 
   const [displayHeading, setDisplayHeading] = useState<number | null>(null);
   const [displayLastHeading, setDisplayLastHeading] = useState<number | null>(null);
-  let headingArray  = [0, 0, 0];
+  let headingArray  = [0, 0, 0, 0, 0, 0, 0, 0, 0];
   const preValidHeading  = useRef<number | null>(null); 
   
   const [displaySog, setDisplaySog] = useState<number | null>(null);
   const [displayLastSog, setDisplayLastSog] = useState<number | null>(null);
-  let sogArray = [0, 0, 0];
+  let sogArray = [0, 0, 0, 0, 0, 0, 0, 0, 0];
   const preValidSog  = useRef<number | null>(null);
 
   // Valores processados
@@ -110,6 +114,17 @@ export default function Index() {
       anguloVento.current = null;
       setAviso("Reset do vento estimado");
     }
+
+    playBeep();
+  }
+
+  async function playBeep() {
+    // Carrega e toca o som imediatamente
+    const { sound: soundInstance } = await Audio.Sound.createAsync(
+       require('../../assets/sounds/beep.mp3')
+    );
+    setSound(soundInstance);
+    await soundInstance.playAsync();
   }
 
 

@@ -6,4 +6,5 @@
 
  1324  npx create-expo-app --template
 
-npx expo install expo-location
+npx expo install expo-location (para GPS)
+npx expo install expo-av (para beep)
