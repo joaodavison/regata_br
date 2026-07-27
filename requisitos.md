@@ -10,20 +10,20 @@
 
 # Outputs
 - visual na tela
-- audio (autofalante bluetooth)
+- beep em audio (autofalante bluetooth)
 - log em arquivo texto
   
 Nota: o termo "avisar" = emitir áudio + exibir no campo status + logar em arquivo
 
 # Medições do GPS
 
-A cada 10s o RBR deve ler a posição do veleiro (x0, y0) como as coordenadas de long e lat do GPS.
+A cada 5s o RBR deve ler a posição do veleiro (x0, y0) como as coordenadas de long e lat do GPS.
 
-A cada 10s o RBR deve calcular o rumo do veleiro como a média entre o rumo atual e rumo anterior se estes estiverem próximos (diferença de 30 deg).
+A cada 5s o RBR deve calcular o rumo do veleiro como a média entre o rumo atual e os 8 rumos anteriores que estiverem próximos (diferença de 30 deg).
 
-A cada 10s o RBR deve calcular o SOG (spped over ground) do veleiro como a média entre a velocidade atual e velocidade anterior se estas estiverem próximas (diferença de 0.3 kt).
+A cada 5s o RBR deve calcular o SOG (speed over ground) do veleiro como a média entre a velocidade atual e as 8 velocidades anteriores que estiverem próximas (diferença de 0.3 kt).
 
-A cada 10s o RBR deve calcular o VMG como SOG * cos(angulo_vento - rumo).  
+A cada 5s o RBR deve calcular o VMG como SOG * cos(angulo_vento - rumo).  
 
 # Calculo da direção do vento estimado
 

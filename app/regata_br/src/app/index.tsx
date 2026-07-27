@@ -17,8 +17,8 @@ export default function Index() {
   // Sound
   const [sound, setSound] = useState(null);
 
+  // Chamada temporizada (rapida) 
   useEffect(() => {
-    // chamada temporizada (rapida) 
     const interval = setInterval(() => { 
       setCounter((counter) => counter + 1); 
       if(counter == -60){
@@ -51,15 +51,19 @@ export default function Index() {
   let sogArray = [0, 0, 0, 0, 0, 0, 0, 0, 0];
   const preValidSog  = useRef<number | null>(null);
 
+  const [displayVmg, setDisplayVmg] = useState<number | null>(null);
+
   // Valores processados
-  let o1  = useRef<number | null>(null);
+  let o1  = useRef<number | null>(null); // orca 1 e orca 2
   let o2  = useRef<number | null>(null);
   let anguloVento  = useRef<number | null>(null);
+  let b1_lat  = useRef<number | null>(null); // boia 1 e boia 2
+  let b1_lon  = useRef<number | null>(null);
+  let b2_lat  = useRef<number | null>(null);
+  let b2_lon  = useRef<number | null>(null);
 
-
+  // Chamada temporizada (lenta) 
   useEffect(() => {
-
-     // chamada temporizada (lenta) 
     const interval = setInterval(async () => {
 
       // solicita a permissão de acesso ao GPS
@@ -82,7 +86,6 @@ export default function Index() {
           preValidSog.current = newConsSog; // guarda para a proxima iteracao
           setDisplaySog(newConsSog);
           setAviso("Novo sog " + (newConsSog) + "kt");
-          playBeep();
         }
 
         // trata Heading
@@ -96,9 +99,16 @@ export default function Index() {
           setAviso("Novo heading " + (newConsHdg) + "deg");
           playBeep();
         }
+
+        // calcula VMG      
+        if((displaySog != null) && (displayHeading != null) && (anguloVento.current != null)){
+          let vmg = roundFirstDecimal(displaySog * Math.cos(anguloVento.current - displayHeading));
+          setDisplayVmg(vmg);
+        }        
+
       }
 
-    }, 10000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
@@ -111,7 +121,7 @@ export default function Index() {
     else if(o2.current == null){
       o2.current = displayHeading;
       anguloVento.current = calcBissetriz(o2.current, o1.current);
-      setAviso("Z_MORTA 2 definida como " + (o2.current) + "deg");
+      setAviso("Z_MORTA 2 definida como " + (o2.current) + "deg");      
     }
     else{
       o1.current = null;
@@ -120,6 +130,26 @@ export default function Index() {
       setAviso("Reset do vento estimado");
     }
   }
+
+  function botaoBoia(){
+    if(b1_lat.current == null){
+      b1_lat.current = calcLat(location.coords.latitude);
+      b1_lon.current = calcLong(location.coords.longitude);
+      setAviso("BOIA 1 definida como " + (b1_lat.current ) + ", " + b1_lon.current );
+    }
+    else if(b2_lat.current == null){
+      b2_lat.current = calcLat(location.coords.latitude);
+      b2_lon.current = calcLong(location.coords.longitude);
+      setAviso("BOIA 2 definida como " + (b2_lat.current ) + ", " + b2_lon.current );
+    }
+    else{
+      b1_lat.current = null;
+      b1_lon.current = null;
+      b2_lat.current = null;
+      b2_lon.current = null;      
+      setAviso("Reset das boias");
+    }
+  }  
 
   async function playBeep() {
     // Carrega e toca o som imediatamente
@@ -151,8 +181,10 @@ export default function Index() {
         </Pressable>
 
         <Pressable style={styles.pressable} >
-          <Text style={styles.medtext}>Boia Larg.</Text>
-          <Text>.</Text>
+          <Text style={styles.medtext} onPress={() => botaoBoia()}>Boia Larg.</Text>
+          {(b1_lat.current == null) && (b2_lat.current == null) && (<Text>captura primeira boia</Text>)}
+          {(b1_lat.current != null) && (b2_lat.current == null) && (<Text>captura segunda boia</Text>)}
+          {(b1_lat.current != null) && (b2_lat.current != null) && (<Text>reset das boias</Text>)}
         </Pressable>        
       </View>      
 
@@ -178,8 +210,9 @@ export default function Index() {
           {(anguloVento.current == null) && (<Text style={styles.bigtext}>?</Text>)}
           </View>
         <View style={styles.card}>
-          {(location != null) && (<Text style={styles.smalltext}>VMG </Text>)}
-          {(location != null) && (<Text style={styles.bigtext}>{calcLat(location.coords.latitude)}, {calcLong(location.coords.longitude)}</Text>)}
+          {(<Text style={styles.smalltext}>VMG </Text>)}
+          {(displayVmg != null) && (<Text style={styles.bigtext}>{displayVmg}</Text>)}
+          {(displayVmg == null) && (<Text style={styles.bigtext}>?</Text>)}
         </View>
       </View>
            
