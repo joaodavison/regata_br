@@ -41,22 +41,25 @@ export default function Index() {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   // const [lastLocation, setLastLocation] = useState<Location.LocationObject | null>(null);
 
-  const [displayHeading, setDisplayHeading] = useState<number | null>(null);
-  const [displayLastHeading, setDisplayLastHeading] = useState<number | null>(null);
+  const [shownHeading, setShownHeading] = useState<number | null>(null);
+  const [shownLastHeading, setShownLastHeading] = useState<number | null>(null);
   let headingArray  = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-  const preValidHeading  = useRef<number | null>(null); 
+  let preValidHdg  = useRef<number | null>(null);
   
-  const [displaySog, setDisplaySog] = useState<number | null>(null);
-  const [displayLastSog, setDisplayLastSog] = useState<number | null>(null);
+  const [shownSog, setShownSog] = useState<number | null>(null);
+  const [shownLastSog, setShownLastSog] = useState<number | null>(null);
   let sogArray = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-  const preValidSog  = useRef<number | null>(null);
+  let preValidSog  = useRef<number | null>(null);
 
-  const [displayVmg, setDisplayVmg] = useState<number | null>(null);
+  const [shownWind, setShownWind] = useState<number | null>(null);
+  const [shownVmg, setShownVmg] = useState<number | null>(null);
 
   // Valores processados
+  let sog  = useRef<number | null>(null);
+  let hdg  = useRef<number | null>(null);
+  let wind  = useRef<number | null>(null);  
   let o1  = useRef<number | null>(null); // orca 1 e orca 2
-  let o2  = useRef<number | null>(null);
-  let anguloVento  = useRef<number | null>(null);
+  let o2  = useRef<number | null>(null);  
   let b1_lat  = useRef<number | null>(null); // boia 1 e boia 2
   let b1_lon  = useRef<number | null>(null);
   let b2_lat  = useRef<number | null>(null);
@@ -80,31 +83,34 @@ export default function Index() {
 
         // trata SOG
         arrayDesloca(sogArray, roundFirstDecimal(currentLocation.coords.speed));
-        let newConsSog = arrayFilterSog(sogArray);
-        if(newConsSog != null){ // encontra valor consolidado, atualiza tela
-          setDisplayLastSog(preValidSog.current);
-          preValidSog.current = newConsSog; // guarda para a proxima iteracao
-          setDisplaySog(newConsSog);
-          setAviso("Novo sog " + (newConsSog) + "kt");
+        sog.current = arrayFilterSog(sogArray);
+        if(sog.current != null){ // encontra valor consolidado, atualiza tela
+          setShownLastSog(preValidSog.current); // TO DO: futuramente guardar apenas no nbotao Compare
+          preValidSog.current = sog.current; // guarda para a proxima iteracao
+          setShownSog(sog.current);
+          setAviso("Novo sog " + (sog.current) + "kt");
         }
 
         // trata Heading
         arrayDesloca(headingArray, Math.round(currentLocation.coords.heading));
-        console.log(headingArray)
-        let newConsHdg = arrayFilterHdg(headingArray);
-        if(newConsHdg != null){ // encontra valor consolidado, atualiza tela
-          setDisplayLastHeading(preValidHeading.current);
-          preValidHeading.current = newConsHdg; // guarda para a proxima iteracao
-          setDisplayHeading(newConsHdg);
-          setAviso("Novo heading " + (newConsHdg) + "deg");
+        // console.log(headingArray)
+        hdg.current = arrayFilterHdg(headingArray);
+        if(hdg.current != null){ // encontra valor consolidado, atualiza tela
+          setShownLastHeading(preValidHdg.current); // TO DO: futuramente guardar apenas no nbotao Compare
+          preValidHdg.current = hdg.current; // guarda para a proxima iteracao
+          setShownHeading(hdg.current);
+          setAviso("Novo heading " + (hdg.current) + "deg");
           playBeep();
         }
 
         // calcula VMG      
-        if((displaySog != null) && (displayHeading != null) && (anguloVento.current != null)){
-          let vmg = roundFirstDecimal(displaySog * Math.cos(anguloVento.current - displayHeading));
-          setDisplayVmg(vmg);
-        }        
+        if((preValidSog.current != null) && (preValidHdg.current != null) && (wind.current != null)){
+          // console.log("sog " +(preValidSog.current))
+          // console.log("angles " + wind.current + " , " + (preValidHdg.current))
+          // console.log("cosine " + ( Math.cos(Math.PI*(wind.current - preValidHdg.current) / 180)))          
+          let vmg = roundFirstDecimal(preValidSog.current * Math.cos(Math.PI*(wind.current - preValidHdg.current) / 180));          
+          setShownVmg(vmg);
+        }      
 
       }
 
@@ -115,18 +121,20 @@ export default function Index() {
 
   function botaoZMorta(){
     if(o1.current == null){
-      o1.current = displayHeading;
+      o1.current = shownHeading;
       setAviso("Z_MORTA 1 definida como " + (o1.current) + "deg");
     }
     else if(o2.current == null){
-      o2.current = displayHeading;
-      anguloVento.current = calcBissetriz(o2.current, o1.current);
+      o2.current = shownHeading;
+      wind.current = calcBissetriz(o2.current, o1.current);
+      setShownWind(wind.current);
       setAviso("Z_MORTA 2 definida como " + (o2.current) + "deg");      
     }
     else{
       o1.current = null;
       o2.current = null;
-      anguloVento.current = null;
+      wind.current = null;
+      setShownWind(null);
       setAviso("Reset do vento estimado");
     }
   }
@@ -192,27 +200,27 @@ export default function Index() {
       <View style={styles.ladoalado}>
         <View style={styles.card}>
           { (<Text style={styles.smalltext}>RUMO</Text>)}      
-          {(displayHeading != null) && (<Text style={styles.bigtext}>{convertHeading(displayHeading)}</Text>)}
-          {(displayHeading == null) && (<Text style={styles.bigtext}>?</Text>)}
-          {(displayLastHeading != null) && (<Text style={styles.smalltext}>pre: {convertHeading(displayLastHeading)}</Text>)}
+          {(shownHeading != null) && (<Text style={styles.bigtext}>{convertHeading(shownHeading)}</Text>)}
+          {(shownHeading == null) && (<Text style={styles.bigtext}>?</Text>)}
+          {(shownLastHeading != null) && (<Text style={styles.smalltext}>pre: {convertHeading(shownLastHeading)}</Text>)}
         </View>
         <View style={styles.card}>
           { (<Text style={styles.smalltext}>SOG</Text>)}          
-          {(displaySog != null) && (<Text style={styles.bigtext}>{displaySog} kt</Text>)}
-          {(displaySog == null) && (<Text style={styles.bigtext}>?</Text>)}
-          {(displayLastSog != null) && (<Text style={styles.smalltext}>pre: {displayLastSog} kt</Text>)}
+          {(shownSog != null) && (<Text style={styles.bigtext}>{shownSog} kt</Text>)}
+          {(shownSog == null) && (<Text style={styles.bigtext}>?</Text>)}
+          {(shownLastSog != null) && (<Text style={styles.smalltext}>pre: {shownLastSog} kt</Text>)}
         </View>        
       </View> 
       <View style={styles.ladoalado}>
         <View style={styles.card}>
           { (<Text style={styles.smalltext}>VENTO</Text>)}
-          {(anguloVento.current != null) && (<Text style={styles.bigtext}>{convertHeading(anguloVento.current)}</Text>)}
-          {(anguloVento.current == null) && (<Text style={styles.bigtext}>?</Text>)}
+          {(shownWind != null) && (<Text style={styles.bigtext}>{convertHeading(shownWind)}</Text>)}
+          {(shownWind == null) && (<Text style={styles.bigtext}>?</Text>)}
           </View>
         <View style={styles.card}>
           {(<Text style={styles.smalltext}>VMG </Text>)}
-          {(displayVmg != null) && (<Text style={styles.bigtext}>{displayVmg}</Text>)}
-          {(displayVmg == null) && (<Text style={styles.bigtext}>?</Text>)}
+          {(shownVmg != null) && (<Text style={styles.bigtext}>{shownVmg}</Text>)}
+          {(shownVmg == null) && (<Text style={styles.bigtext}>?</Text>)}
         </View>
       </View>
            
