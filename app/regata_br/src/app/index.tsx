@@ -9,10 +9,11 @@ import { roundFirstDecimal, arrayFilterHdg, arrayFilterSog, arrayDesloca, calcBi
 export default function Index() {
 
   // Mensagens
-  const [aviso, setAviso] = useState("Boa regata")  
+  const [aviso, setAviso] = useState("Boa regata");
 
   // Timer
-  const [counter, setCounter] = useState(-300) // 5 min
+  const [counter, setCounter] = useState(0);
+  const [statusCounter, setStatusCounter] = useState(0);  // 0: idle / 1: 5 min / 2: 1 min / 3: regata / 4: fim 
 
   // Sound
   const [sound, setSound] = useState(null);
@@ -20,17 +21,20 @@ export default function Index() {
   // Chamada temporizada (rapida) 
   useEffect(() => {
     const interval = setInterval(() => { 
-      setCounter((counter) => counter + 1); 
-      if(counter == -60){
-        setAviso("Falta 1 minuto");
-        playBeep();
-      }
-      if((counter <= -10) && (counter > 0)){
-        setAviso("Faltam " + counter + " segundos");
-      }
-      if(counter == 0){
-        setAviso("Valendo!");
-        playBeep();
+      if((statusCounter > 0) && (statusCounter < 4)){
+        setCounter((counter) => counter + 1); 
+        if(counter == -60){
+          setAviso("Falta 1 minuto");
+          playBeep();
+        }
+        if((counter <= -10) && (counter > 0)){
+          setAviso("Faltam " + counter + " segundos");
+          playBeep();
+        }
+        if(counter == 0){
+          setAviso("Valendo!");
+          playBeep();//TO DO beep diferente
+        }
       }
     }, 1000);
     return () => clearInterval(interval);
@@ -157,6 +161,41 @@ export default function Index() {
       b2_lon.current = null;      
       setAviso("Reset das boias");
     }
+  } 
+  
+  function botaoContagem(){
+    // 0: idle / 1: 5 min / 2: 1 min / 3: regata / 4: fim 
+    if(statusCounter == 0){
+      setCounter(-300); 
+      setAviso("Contagem iniciada");
+    }
+
+    if(statusCounter == 1){
+      setCounter(-60); 
+      setAviso("Contagem adiantada para 1 min");
+    }    
+
+    if(statusCounter == 2){
+      setCounter(0); 
+      setAviso("Contagem adiantada para largada");
+    }        
+
+    if(statusCounter == 3){
+      // TO DO
+      setAviso("Regata salva");
+    }        
+
+    if(statusCounter == 4){
+      setAviso("Regata resetada");      
+    }    
+
+    // Vai para proximo estado
+    if(statusCounter < 4){
+      setStatusCounter(statusCounter + 1); 
+    }
+    else{
+      setStatusCounter(0); 
+    }    
   }  
 
   async function playBeep() {
@@ -181,18 +220,18 @@ export default function Index() {
 
       { /* botoes superiores */ }
       <View style={styles.ladoalado}>
-        <Pressable style={styles.pressable}>
-          <Text style={styles.medtext} onPress={() => botaoZMorta()}>Zona Morta</Text>
-          {(o1.current == null) && (o2.current == null) && (<Text>captura primeira proa</Text>)}
-          {(o1.current != null) && (o2.current == null) && (<Text>captura segunda proa</Text>)}
-          {(o1.current != null) && (o2.current != null) && (<Text>reset zona morta</Text>)}
+        <Pressable style={styles.pressable} onPress={() => botaoZMorta()}>
+          <Text style={styles.medtext}>Zona Morta</Text>
+          {(o1.current == null) && (o2.current == null) && (<Text>capturar primeira proa</Text>)}
+          {(o1.current != null) && (o2.current == null) && (<Text>capturar segunda proa</Text>)}
+          {(o1.current != null) && (o2.current != null) && (<Text>resetar zona morta</Text>)}
         </Pressable>
 
-        <Pressable style={styles.pressable} >
-          <Text style={styles.medtext} onPress={() => botaoBoia()}>Boia Larg.</Text>
-          {(b1_lat.current == null) && (b2_lat.current == null) && (<Text>captura primeira boia</Text>)}
-          {(b1_lat.current != null) && (b2_lat.current == null) && (<Text>captura segunda boia</Text>)}
-          {(b1_lat.current != null) && (b2_lat.current != null) && (<Text>reset das boias</Text>)}
+        <Pressable style={styles.pressable} onPress={() => botaoBoia()}>
+          <Text style={styles.medtext}>Boia Larg.</Text>
+          {(b1_lat.current == null) && (b2_lat.current == null) && (<Text>capturar primeira boia</Text>)}
+          {(b1_lat.current != null) && (b2_lat.current == null) && (<Text>capturar segunda boia</Text>)}
+          {(b1_lat.current != null) && (b2_lat.current != null) && (<Text>resetar as boias</Text>)}
         </Pressable>        
       </View>      
 
@@ -227,14 +266,15 @@ export default function Index() {
 
       { /* botoes inferiores */ }
       <View style={styles.ladoalado}>
-        <Pressable style={styles.pressable} onPress={() => {setCounter(-300); setAviso("Contagem iniciada");}}>
+        <Pressable style={styles.pressable} onPress={() => botaoContagem()}>
           <Text style={styles.medtext}>Contagem</Text>
-          <Text>{counter}</Text>
+          {(statusCounter == 0) && (<Text>iniciar</Text>)}
+          {(statusCounter > 0) && (<Text>{counter}</Text>)}          
         </Pressable>
 
         <Pressable style={styles.pressable} >
           <Text style={styles.medtext}>Compara</Text>
-          <Text>.</Text>
+          <Text>...</Text>
         </Pressable>        
       </View>
 
