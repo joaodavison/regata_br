@@ -26,14 +26,19 @@ export default function Index() {
         if(counter == -60){
           setAviso("Falta 1 minuto");
           playBeep();
+          if(statusCounter < 2){
+            setStatusCounter(2);
+          }
         }
-        if((counter <= -10) && (counter > 0)){
-          setAviso("Faltam " + counter + " segundos");
+        if((counter >= -10) && (counter < 0)){
           playBeep();
         }
         if(counter == 0){
           setAviso("Valendo!");
           playBeep();//TO DO beep diferente
+          if(statusCounter < 3){
+            setStatusCounter(3);
+          }          
         }
       }
     }, 1000);
@@ -171,13 +176,17 @@ export default function Index() {
     }
 
     if(statusCounter == 1){
-      setCounter(-60); 
-      setAviso("Contagem adiantada para 1 min");
+      if(counter < -60){
+        setCounter(-60); 
+        setAviso("Contagem adiantada para 1 min");
+      }      
     }    
 
     if(statusCounter == 2){
-      setCounter(0); 
-      setAviso("Contagem adiantada para largada");
+      if(counter < 0){
+        setCounter(0); 
+        setAviso("Contagem adiantada para largada");
+      }
     }        
 
     if(statusCounter == 3){
